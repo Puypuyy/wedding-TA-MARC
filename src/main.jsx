@@ -1,9 +1,9 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import { Index as Admin } from './__admin/index.tsx'
-import { Index as Client } from './__client/index.tsx'
-import { Index as Marketing } from './__marketing/index.tsx'
-import { Index as Public } from './__public/index.tsx'
+import { Index as Admin } from './__admin/index.jsx'
+import { Index as Client } from './__client/index.jsx'
+import { Index as Marketing } from './__marketing/index.jsx'
+import { Index as Public } from './__public/index.jsx'
 import './App.css'
 
 const loc = window.location.pathname
@@ -22,7 +22,7 @@ if (subdir === 'developerAccess') {
 	Core = Marketing
 }
 
-createRoot(document.getElementById('root')!).render(
+createRoot(document.getElementById('root')).render(
 	<StrictMode>
 		<Core />
 	</StrictMode>,
