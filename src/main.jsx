@@ -6,11 +6,20 @@ import { Index as Marketing } from './__marketing/index.jsx'
 import { Index as Public } from './__public/index.jsx'
 import './App.css'
 
-const loc = window.location.pathname
-const subdir = loc.split('/')[2]
-let Core
+const routes = new Set(['developerAccess', 'wedorg', 'invitation', 'invitaion'])
+const segments = window.location.pathname.split('/').filter(Boolean)
+let subdir = segments[0] || ''
 
-console.log(subdir)
+// Support both root deploys (/invitation) and subpath deploys (/repo/invitation).
+if (!routes.has(subdir) && segments[1] && routes.has(segments[1])) {
+	subdir = segments[1]
+}
+
+if (subdir === 'invitaion') {
+	subdir = 'invitation'
+}
+
+let Core
 
 if (subdir === 'developerAccess') {
 	Core = Admin
