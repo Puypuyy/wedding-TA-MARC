@@ -1,7 +1,8 @@
 import SharedOnepager from "../SharedOnepager";
 
-const OnepagerTablet = ({ onBackToInvitation }: { onBackToInvitation: () => void }) => {
+const OnepagerTablet = ({ onBackToInvitation }) => {
   return <SharedOnepager onBackToInvitation={onBackToInvitation} variant="tablet" />;
 };
 
 export default OnepagerTablet;
+
