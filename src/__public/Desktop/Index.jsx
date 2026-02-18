@@ -1,154 +1,146 @@
-import { Box, Typography, Button, Divider } from "@mui/material";
+import { useEffect, useMemo, useState } from "react";
+import { Box, Button, Typography } from "@mui/material";
 import { motion } from "framer-motion";
-import paperbg from "../../assets/bgs/paper-bg.png";
-import tamarc from "../../assets/bgs/tamarc2.jpg";
+import { invitationContent } from "../invitationContent";
 
 const MotionBox = motion(Box);
-const MotionTypography = motion(Typography);
+const targetDate = new Date("2026-04-24T13:30:00");
 
-const Invitation = () => {
+const getCountdown = () => {
+  const now = new Date();
+  const diff = targetDate.getTime() - now.getTime();
+  if (diff <= 0) return { days: "00", hours: "00", minutes: "00", seconds: "00" };
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+  const minutes = Math.floor((diff / (1000 * 60)) % 60);
+  const seconds = Math.floor((diff / 1000) % 60);
+  return {
+    days: String(days).padStart(2, "0"),
+    hours: String(hours).padStart(2, "0"),
+    minutes: String(minutes).padStart(2, "0"),
+    seconds: String(seconds).padStart(2, "0"),
+  };
+};
+
+const cardSx = {
+  borderRadius: "24px",
+  backgroundColor: "rgba(255,255,255,0.92)",
+  boxShadow: "0 14px 32px rgba(0,0,0,0.06)",
+  border: "1px solid rgba(156,107,47,0.16)",
+  p: 4,
+};
+
+const Invitation = ({ onRsvpClick }) => {
+  const c = invitationContent;
+  const [countdown, setCountdown] = useState(getCountdown);
+  const countItems = useMemo(
+    () => [
+      { label: "Days", value: countdown.days },
+      { label: "Hours", value: countdown.hours },
+      { label: "Minutes", value: countdown.minutes },
+      { label: "Seconds", value: countdown.seconds },
+    ],
+    [countdown],
+  );
+
+  useEffect(() => {
+    const timer = window.setInterval(() => setCountdown(getCountdown()), 1000);
+    return () => window.clearInterval(timer);
+  }, []);
+
   return (
     <Box
       sx={{
+        width: "100%",
         minHeight: "100vh",
-        minWidth: "100vw",
-
-        backgroundImage: `
-          linear-gradient(
-            90deg,
-            rgba(0,0,0,0.65) 0%,
-            rgba(0,0,0,0.35) 15%,
-            rgba(0,0,0,0.1) 30%,
-            rgba(0,0,0,0) 100%
-          ),
-          url(${tamarc})
-        `,
-        backgroundSize: "cover",
-        backgroundPosition: "50% center",
-        backgroundRepeat: "no-repeat",
-
-        display: "flex",
-        alignItems: "center",
-        justifyContent: {
-          xs: "center",
-          md: "flex-start",
-        },
-
-        px: { xs: 4, md: 12 },
+        position: "relative",
+        overflow: "hidden",
+        background: "transparent",
       }}
     >
-      {/* Invitation Card */}
       <MotionBox
-        initial={{ opacity: 0, x: -40 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 1 }}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
         sx={{
-          maxWidth: 700,
-          width: "100%",
-
-          backgroundImage: `url(${paperbg})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundRepeat: "no-repeat",
-
-          borderRadius: 1,
-          p: { xs: 4, md: 6 },
+          position: "relative",
+          maxWidth: 860,
+          mx: "auto",
+          px: 4,
+          py: 10,
           textAlign: "center",
-          boxShadow: "0 20px 40px rgba(0,0,0,0.2)",
         }}
       >
-        {/* Header */}
-        <MotionTypography
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.3 }}
+        <Box sx={{ ...cardSx, mb: 4 }}>
+          <Typography sx={{ fontFamily: '"Cormorant Garamond", serif', letterSpacing: 4, color: "#A79C8E", textTransform: "uppercase", fontSize: "0.82rem", mb: 3 }}>
+            Together with their families
+          </Typography>
+          <Typography sx={{ fontFamily: '"Cormorant Garamond", serif', fontSize: { xs: "3rem", md: "4.2rem" }, color: "#9C6B2F", lineHeight: 1 }}>
+            {c.names.first}
+          </Typography>
+          <Typography sx={{ fontFamily: '"Cormorant Garamond", serif', fontSize: "1.4rem", color: "#7A5630", my: 1.2 }}>
+            {c.names.conjunction}
+          </Typography>
+          <Typography sx={{ fontFamily: '"Cormorant Garamond", serif', fontSize: { xs: "3rem", md: "4.2rem" }, color: "#9C6B2F", lineHeight: 1 }}>
+            {c.names.second}
+          </Typography>
+          <Typography sx={{ mt: 3, fontFamily: '"Cormorant Garamond", serif', fontSize: "1.15rem", color: "#A79C8E" }}>
+            {c.header}
+          </Typography>
+          <Typography sx={{ fontFamily: '"Cormorant Garamond", serif', fontSize: "1.2rem", color: "#7A5630" }}>
+            {c.tagline}
+          </Typography>
+        </Box>
+
+        <Box sx={{ ...cardSx, mb: 4 }}>
+          <Typography sx={{ fontFamily: '"Cormorant Garamond", serif', letterSpacing: 2, color: "#7A5630", fontSize: "1.8rem", mb: 1 }}>
+            {c.date}
+          </Typography>
+          <Typography sx={{ fontFamily: '"Cormorant Garamond", serif', color: "#A79C8E", fontSize: "1.2rem", mb: 3 }}>
+            {c.time}
+          </Typography>
+          <Box sx={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 1.5 }}>
+            {countItems.map((item) => (
+              <Box key={item.label} sx={{ borderRadius: "14px", p: 1.3, backgroundColor: "#FFFFFF", border: "1px solid rgba(156,107,47,0.14)" }}>
+                <Typography sx={{ fontFamily: '"Cormorant Garamond", serif', fontSize: "1.4rem", color: "#9C6B2F" }}>{item.value}</Typography>
+                <Typography sx={{ fontFamily: '"Cormorant Garamond", serif', fontSize: "0.86rem", color: "#A79C8E", letterSpacing: 1 }}>
+                  {item.label}
+                </Typography>
+              </Box>
+            ))}
+          </Box>
+        </Box>
+
+        <Box sx={{ ...cardSx, mb: 4 }}>
+          <Typography sx={{ fontFamily: '"Cormorant Garamond", serif', fontSize: "1.6rem", color: "#7A5630", mb: 1.2 }}>
+            {c.venue.name}
+          </Typography>
+          <Typography sx={{ fontFamily: '"Cormorant Garamond", serif', fontSize: "1.1rem", color: "#A79C8E", mb: 2 }}>
+            {c.venue.note}
+          </Typography>
+          <Typography sx={{ fontFamily: '"Cormorant Garamond", serif', fontSize: "1.25rem", color: "#7A5630", fontStyle: "italic", maxWidth: 620, mx: "auto" }}>
+            {c.footer}
+          </Typography>
+        </Box>
+
+        <Button
+          onClick={onRsvpClick}
+          variant="contained"
           sx={{
-            fontFamily: "Playfair Display, serif",
-            letterSpacing: 3,
-            color: "#9c7c38",
-            mb: 1,
+            px: 5,
+            py: 1.5,
+            borderRadius: "999px",
+            backgroundColor: "#9C6B2F",
+            color: "#fff",
+            fontFamily: '"Cormorant Garamond", serif',
+            letterSpacing: 2,
+            fontSize: "0.95rem",
+            textTransform: "uppercase",
+            "&:hover": { backgroundColor: "#7A5630", transform: "translateY(-2px)" },
           }}
         >
-          YOU ARE INVITED
-        </MotionTypography>
-
-        <Divider sx={{ my: 2 }} />
-
-        {/* Names */}
-        <MotionTypography
-          initial={{ scale: 0.9 }}
-          animate={{ scale: 1 }}
-          transition={{ delay: 0.5 }}
-          sx={{
-            fontFamily: "Playfair Display, serif",
-            fontSize: { xs: "2.3rem", md: "3rem" },
-            fontWeight: 600,
-          }}
-        >
-          John & Maria
-        </MotionTypography>
-
-        <Typography sx={{ mt: 1, mb: 3, color: "text.secondary" }}>
-          are getting married
-        </Typography>
-
-        {/* Animated Divider */}
-        <MotionBox
-          initial={{ width: 0 }}
-          animate={{ width: 120 }}
-          transition={{ delay: 0.7, duration: 0.8 }}
-          sx={{
-            height: 2,
-            backgroundColor: "#9c7c38",
-            mx: "auto",
-            mb: 3,
-          }}
-        />
-
-        {/* Details */}
-        <Typography sx={{ fontSize: "1.1rem", mb: 1 }}>
-          Saturday, the 20th of July 2026
-        </Typography>
-        <Typography sx={{ fontSize: "1.1rem", mb: 3 }}>
-          at 3:00 in the afternoon
-        </Typography>
-
-        <Typography sx={{ color: "text.secondary", mb: 4 }}>
-          The Grand Garden Hall
-          <br />
-          Tagaytay City, Philippines
-        </Typography>
-
-        {/* RSVP Button */}
-        <MotionBox whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-          <Button
-            variant="contained"
-            sx={{
-              backgroundColor: "#9c7c38",
-              px: 5,
-              py: 1.5,
-              borderRadius: 50,
-              fontSize: "1rem",
-              textTransform: "none",
-              "&:hover": {
-                backgroundColor: "#8b6e30",
-              },
-            }}
-          >
-            RSVP Now
-          </Button>
-        </MotionBox>
-
-        {/* Footer */}
-        <Typography
-          sx={{
-            mt: 5,
-            fontSize: "0.85rem",
-            color: "text.secondary",
-          }}
-        >
-          We look forward to celebrating with you
-        </Typography>
+          {c.cta}
+        </Button>
       </MotionBox>
     </Box>
   );

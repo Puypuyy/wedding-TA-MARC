@@ -1,0 +1,1063 @@
+import { useEffect, useMemo, useState } from "react";
+import { Box, Button, Divider, Typography, useMediaQuery } from "@mui/material";
+import { motion } from "framer-motion";
+import SpaOutlinedIcon from "@mui/icons-material/SpaOutlined";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import EventOutlinedIcon from "@mui/icons-material/EventOutlined";
+import ChurchOutlinedIcon from "@mui/icons-material/ChurchOutlined";
+import PhotoCameraOutlinedIcon from "@mui/icons-material/PhotoCameraOutlined";
+import KeyboardBackspaceOutlinedIcon from "@mui/icons-material/KeyboardBackspaceOutlined";
+import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
+import ChevronLeftRoundedIcon from "@mui/icons-material/ChevronLeftRounded";
+import ChevronRightRoundedIcon from "@mui/icons-material/ChevronRightRounded";
+
+const MotionBox = motion(Box);
+
+const weddingStatic = {
+  couple: "Rendon ~ Nepomuceno Nuptial",
+  date: "Saturday, April 24, 2026",
+  backToInvitation: "Back to Invitation",
+  pages: {
+    welcome: {
+      title: "Welcome",
+      preview: "A graceful beginning to our celebration.",
+      icon: SpaOutlinedIcon,
+      quote: "With joy in our hearts, we invite you to witness our forever.",
+      hero: "An Evening of Vows, Elegance, and Celebration",
+      venue: "Garden Estate, Tuscany",
+      details: [
+        "Ceremony and reception crafted as one flowing experience.",
+        "A classic formal ambiance inspired by old-world romance.",
+        "Every moment designed to honor love, family, and tradition.",
+      ],
+      gallery: [
+        { caption: "First Date", image: "/images/welcome-photos/MCP-2.jpg", tone: "linear-gradient(135deg, #c9b8a8 0%, #a89080 100%)" },
+        { caption: "Adventure Together", image: "/images/welcome-photos/MCP-6.jpg", tone: "linear-gradient(135deg, #d4c4b4 0%, #b8a898 100%)" },
+        { caption: "The Proposal", image: "/images/welcome-photos/MCP-15.jpg", tone: "linear-gradient(135deg, #bfaf9f 0%, #9f8f7f 100%)" },
+        { caption: "Sunset Walk", image: "/images/welcome-photos/MCP-34.jpg", tone: "linear-gradient(135deg, #cdbfaf 0%, #ad9f8f 100%)" },
+        { caption: "Our Engagement", image: "/images/welcome-photos/MCP-49 (2).jpg", tone: "linear-gradient(135deg, #c4b4a4 0%, #a49484 100%)" },
+        { caption: "Forever Begins", image: "/images/welcome-photos/MCP-2.jpg", tone: "linear-gradient(135deg, #d9c9b9 0%, #b9a999 100%)" },
+      ],
+    },
+    story: {
+      title: "Our Story",
+      preview: "From first hello to forever yes.",
+      icon: FavoriteBorderIcon,
+      hero: "The Story Behind the Promise",
+      details: [
+        "A friendship that became devotion.",
+        "A thousand ordinary days made extraordinary together.",
+        "A promise made in gratitude, faith, and love.",
+      ],
+      timeline: [
+        { year: "2019", label: "The First Meeting", note: "A quiet beginning that changed everything." },
+        { year: "2022", label: "The Proposal", note: "A heartfelt yes and a future chosen together." },
+        { year: "2026", label: "The Wedding", note: "A celebration shared with the people we cherish." },
+      ],
+    },
+    schedule: {
+      title: "Schedule",
+      preview: "A curated flow from vows to afterglow.",
+      icon: EventOutlinedIcon,
+      hero: "Timeline of the Celebration",
+      items: [
+        { time: "1:30 PM", event: "Guest Arrival", note: "Welcome drinks and foyer reception." },
+        { time: "2:00 PM", event: "Wedding Ceremony", note: "Sacred vows and ring exchange." },
+        { time: "4:30 PM", event: "Cocktail Hour", note: "Music, portraits, and signatures." },
+        { time: "6:00 PM", event: "Grand Reception", note: "Dinner service and formal program." },
+        { time: "8:30 PM", event: "First Dance & Toast", note: "An intimate moment with loved ones." },
+      ],
+    },
+    // travel: {
+    //   title: "Travel",
+    //   preview: "Arrive comfortably, celebrate fully.",
+    //   icon: FlightTakeoffOutlinedIcon,
+    //   hero: "Travel and Stay",
+    //   details: [
+    //     "Luxury hotel blocks are arranged near the venue district.",
+    //     "Shuttle transfer windows will be shared with confirmed guests.",
+    //     "Private parking and valet services are available on-site.",
+    //   ],
+    //   cards: [
+    //     { title: "Airport Transfer", note: "Dedicated premium transfer options available." },
+    //     { title: "Hotel Partners", note: "Curated accommodations with wedding guest rates." },
+    //     { title: "Guest Concierge", note: "Personal assistance for itinerary coordination." },
+    //   ],
+    // },
+    details: {
+      title: "Wedding Details",
+      preview: "Refined dress, etiquette, and celebration notes.",
+      icon: ChurchOutlinedIcon,
+      hero: "Together with their loving parents",
+      parents: [
+        "Mr. Alex Realuyo Rendon",
+        "Mrs. Marissa De Vera Rendon",
+        "Mr. Angelito De Jesus Nepomuceno",
+        "Mrs. Rebecca Estella Nepomuceno",
+      ],
+      principalSponsors: [
+        "Mr. Ronnel C. Gacula",
+        "Mr. Josiah Villegas",
+        "Mr. Roderick R. Villanueva",
+        "Mr. Napoleon V. Aquino Sr.",
+        "Mr. Hadji M. Tejada",
+        "Mr. Sergio L. Haveria",
+        "Mr. Joey Francisco",
+        "Mr. James Bernardo",
+        "Mr. Alex Soriano",
+        "Mrs. Charlete Karl T. Labrador",
+        "Mrs. Sarrah Villegas",
+        "Mrs. Maria Cristina S. Dematera",
+        "Mrs. Lanie S. Aquino",
+        "Mrs. Michelle S. Tejada",
+        "Mrs. Lilia D. Haveria",
+        "Mrs. Celeste A. Marco",
+        "Mrs. Jocelyn F. Lejano",
+        "Mrs. Emelita Soriano",
+      ],
+      entourage: {
+        bestGirl: "Ms. Angelica Mae E. Nepomuceno",
+        matronOfHonor: "Mrs. Contessa P. Borja",
+        bestMan: "Mr. Czaremar Y. Apit",
+      },
+      secondarySponsors: {
+        Candle: ["Ms. Hariam Dorenna Z. Lijauco", "Mr. John Patrick Oblina"],
+        Cord: ["Ms. Katrina Angela O. Yabut", "Mr. Joseph Russel Clemente"],
+        Arrhae: ["Ms. Carmina Ann Felix", "Mr. Patrick Edison Uy"],
+        Veil: ["Ms. Erica Mae G. Capatayan", "Mr. Arvin Cayabyab"],
+        Bible: ["Ms. Akemi Inabayashi", "Mr. Joseph Jongko"],
+      },
+      ringBearers: ["Ms. Viona Mariz Joy Rendon", "Mr. Alexis Mari Rendon"],
+      bridesmaids: [
+        "Ms. Angelica B. Quioyo",
+        "Ms. Mary Cathlene Nicole Poniado",
+        "Ms. Joefcelyn C. Parejo",
+        "Ms. Jessy Ruth Caballero",
+      ],
+      groomsmen: [
+        "Mr. Jasper Jay T. Bumatay",
+        "Mr. Mike Lawrence Malapajo",
+        "Mr. Vince Tambor",
+        "Mr. Napoleon Aquino Jr.",
+      ],
+      guestGuide: {
+        dressCode: [
+          "We kindly request our guests to attend in formal evening attire.",
+          "Gentlemen: Black suit with an inner shirt in a shade from the color palette.",
+          "Ladies: Floor-length gown from the color palette. Floral gowns are welcome!",
+        ],
+        paletteGuests: ["#056385", "#b1ddf1", "#d1edfb", "#e9dec3", "#faf0b4", "#fff9d9"],
+        paletteSponsors: ["#f6e7d7", "#d6c7b5", "#c9c9c9"],
+        notes: [
+          "We adore your little ones, but we kindly ask that our wedding be an adult-only celebration. We completely understand if you're unable to join us should no one be available to look after them-we'll be celebrating with you in spirit.",
+          "UNPLUGGED CEREMONY: We've hired some amazing photographers to capture our best angles-so sit back, relax, and enjoy the moment with us. Kindly refrain from taking photos during the ceremony and let the professionals work their magic.",
+          "GIFTS: Your love, prayers, and presence on our special day mean the world to us. We already feel so blessed to be celebrating our dream wedding with you. Should you wish to give a gift, we would deeply appreciate a monetary one to help us begin our new journey together.",
+        ],
+      },
+    },
+    photos: {
+      title: "Photos",
+      preview: "Portraits, memories, and after-wedding gallery.",
+      icon: PhotoCameraOutlinedIcon,
+      hero: "Moments We Will Treasure",
+      details: [
+        "A professional gallery link will be delivered after the wedding.",
+        "A live portrait wall will be available during the reception.",
+        "Couple and family portraits follow immediately after the ceremony.",
+      ],
+      cards: [
+        {
+          title: "Engagement Portraits",
+          note: "Signature portraits from our pre-wedding session.",
+          image: "/images/photos/MCP-1.jpg",
+          tone: "linear-gradient(135deg, #cbb8a7 0%, #ab9583 100%)",
+        },
+        {
+          title: "Ceremony Frames",
+          note: "The aisle, vows, and ring exchange highlights.",
+          image: "/images/photos/MCP-11.jpg",
+          tone: "linear-gradient(135deg, #cbb8a7 0%, #ab9583 100%)",
+        },
+        {
+          title: "Reception Highlights",
+          note: "Toasts, dances, and evening celebration moments.",
+          image: "/images/photos/MCP-13.jpg",
+          tone: "linear-gradient(135deg, #cbb8a7 0%, #ab9583 100%)",
+        },
+      ],
+    },
+  },
+};
+
+const desktopPositions = [
+  { top: "6%", left: "4%", rotate: "-6deg", zIndex: 6 },
+  { top: "2%", left: "36%", rotate: "3deg", zIndex: 7 },
+  { top: "8%", right: "4%", rotate: "-4deg", zIndex: 5 },
+  { bottom: "8%", left: "8%", rotate: "5deg", zIndex: 3 },
+  { bottom: "5%", left: "38%", rotate: "-2deg", zIndex: 8 },
+  { bottom: "10%", right: "6%", rotate: "6deg", zIndex: 4 },
+];
+
+const tabletPositions = [
+  { top: "6%", left: "4%", rotate: "-4deg", zIndex: 6 },
+  { top: "3%", left: "36%", rotate: "2deg", zIndex: 7 },
+  { top: "8%", right: "4%", rotate: "-3deg", zIndex: 5 },
+  { bottom: "10%", left: "8%", rotate: "4deg", zIndex: 3 },
+  { bottom: "7%", left: "38%", rotate: "-2deg", zIndex: 8 },
+  { bottom: "11%", right: "6%", rotate: "5deg", zIndex: 4 },
+];
+
+const sparkleStyles = [
+  { top: "10%", left: "15%", delay: 0 },
+  { top: "18%", right: "16%", delay: 0.45 },
+  { top: "62%", left: "8%", delay: 0.95 },
+  { bottom: "30%", right: "14%", delay: 1.45 },
+  { bottom: "14%", left: "26%", delay: 1.95 },
+];
+
+const paperSx = {
+  background: "linear-gradient(145deg, #FFFFFF 0%, #FAF7F3 100%)",
+  border: "1px solid rgba(201,160,117,0.3)",
+  borderRadius: "8px",
+  boxShadow: "0 16px 35px rgba(0,0,0,0.11)",
+};
+
+const slugFromHash = () => {
+  const slug = window.location.hash.replace("#", "");
+  return weddingStatic.pages[slug] ? slug : null;
+};
+
+const uploadedPhotos = Object.entries(
+  import.meta.glob("../../../public/images/photos/*.{jpg,jpeg,png,webp,avif,JPG,JPEG,PNG,WEBP,AVIF}", {
+    eager: true,
+    import: "default",
+  }),
+)
+  .map(([filePath, assetUrl]) => {
+    const fileName = filePath.split("/").pop() || "Photo";
+    const title = fileName.replace(/\.[^/.]+$/, "").replace(/[-_]+/g, " ").trim();
+    return {
+      title,
+      image: assetUrl,
+      note: "Uploaded photo",
+      tone: "linear-gradient(135deg, #cbb8a7 0%, #ab9583 100%)",
+    };
+  })
+  .sort((a, b) => a.title.localeCompare(b.title, undefined, { numeric: true, sensitivity: "base" }));
+
+const resolvePublicImage = (path) => {
+  if (!path) return null;
+  return `${import.meta.env.BASE_URL}${path.replace(/^\/+/, "")}`;
+};
+
+const PageCard = ({ page, isMobile, isTablet, styleSx, onClick }) => {
+  const IconComp = page.icon;
+  return (
+    <MotionBox whileHover={{ y: -6, scale: 1.02 }} onClick={onClick} sx={{ ...paperSx, cursor: "pointer", ...styleSx }}>
+      <Box sx={{ color: "#C9A075", mb: 0.8, lineHeight: 1 }}>
+        <IconComp sx={{ fontSize: isMobile ? "1.8rem" : isTablet ? "2rem" : "2.3rem" }} />
+      </Box>
+      <Typography sx={{ color: "#5D4E3C", fontSize: isMobile ? "1.35rem" : isTablet ? "1.5rem" : "1.8rem", mb: 0.8 }}>
+        {page.title}
+      </Typography>
+      <Typography sx={{ color: "#8B7355", fontSize: isMobile ? "0.9rem" : isTablet ? "0.92rem" : "1rem", lineHeight: 1.35 }}>
+        {page.preview}
+      </Typography>
+    </MotionBox>
+  );
+};
+
+const WelcomeDetailPage = ({ page, onBackToCards }) => {
+  const [activePhoto, setActivePhoto] = useState(null);
+  const photos = page.gallery || [];
+  const desktopPhotoLayout = [
+    { left: "3%", top: "2%", rotate: "-4deg" },
+    { left: "33%", top: "0%", rotate: "3deg" },
+    { right: "6%", top: "5%", rotate: "-2deg" },
+    { left: "10%", top: "53%", rotate: "5deg" },
+    { right: "18%", top: "57%", rotate: "-3deg" },
+    { left: "41%", top: "68%", rotate: "2deg" },
+  ];
+
+  const movePhoto = (direction) => {
+    if (activePhoto === null) return;
+    const len = photos.length;
+    const next = (activePhoto + direction + len) % len;
+    setActivePhoto(next);
+  };
+
+  return (
+    <MotionBox initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} sx={{ minHeight: "100vh", px: { xs: 2, md: 4 }, py: 3 }}>
+      <Box sx={{ maxWidth: 1120, mx: "auto" }}>
+        <Box sx={{ ...paperSx, p: { xs: 2.2, md: 4 }, border: "1.5px solid rgba(201,160,117,0.35)" }}>
+          <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
+            <Button onClick={onBackToCards} startIcon={<KeyboardBackspaceOutlinedIcon />} sx={{ color: "#7A5630" }}>
+              Back to Pages
+            </Button>
+            <Typography sx={{ color: "#8B7355", letterSpacing: 1.3, fontSize: "0.8rem", textTransform: "uppercase" }}>
+              {weddingStatic.date}
+            </Typography>
+          </Box>
+
+          <Box sx={{ textAlign: "center", mb: 3 }}>
+            <Typography sx={{ color: "#5D4E3C", fontSize: { xs: "2.2rem", md: "4rem" }, fontStyle: "italic", lineHeight: 1 }}>
+              {weddingStatic.couple}
+            </Typography>
+            <Typography sx={{ color: "#8B7355", fontSize: { xs: "1rem", md: "1.25rem" }, mt: 0.4 }}>{page.venue}</Typography>
+            <Divider sx={{ maxWidth: 180, mx: "auto", mt: 2, borderColor: "rgba(201,160,117,0.45)" }} />
+            <Typography sx={{ color: "#7A5630", fontSize: { xs: "1.05rem", md: "1.25rem" }, mt: 2, fontStyle: "italic" }}>
+              {page.quote}
+            </Typography>
+          </Box>
+
+          <Box sx={{ display: { xs: "grid", md: "none" }, gridTemplateColumns: "1fr 1fr", gap: 1.5 }}>
+            {photos.map((photo, idx) => (
+              <MotionBox
+                key={photo.caption}
+                whileHover={{ y: -4, scale: 1.02 }}
+                onClick={() => setActivePhoto(idx)}
+                sx={{
+                  ...paperSx,
+                  p: "10px 10px 30px",
+                  cursor: "pointer",
+                  transform: `rotate(${idx % 2 === 0 ? -2 : 2}deg)`,
+                }}
+              >
+                <Box
+                  sx={{
+                    aspectRatio: "1 / 1",
+                    borderRadius: "2px",
+                    background: photo.tone,
+                    backgroundImage: photo.image ? `url("${resolvePublicImage(photo.image)}")` : "none",
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                    backgroundRepeat: "no-repeat",
+                  }}
+                />
+                <Typography sx={{ textAlign: "center", mt: 1, color: "#6F4E37", fontSize: "0.95rem" }}>{photo.caption}</Typography>
+              </MotionBox>
+            ))}
+          </Box>
+
+          <Box sx={{ display: { xs: "none", md: "block" }, position: "relative", height: "740px" }}>
+            {photos.map((photo, idx) => (
+              <MotionBox
+                key={photo.caption}
+                whileHover={{ y: -8, scale: 1.04, rotate: "0deg" }}
+                onClick={() => setActivePhoto(idx)}
+                sx={{
+                  ...paperSx,
+                  position: "absolute",
+                  width: "220px",
+                  p: "12px 12px 36px",
+                  cursor: "pointer",
+                  transform: `rotate(${desktopPhotoLayout[idx].rotate})`,
+                  ...desktopPhotoLayout[idx],
+                }}
+              >
+                <Box
+                  sx={{
+                    aspectRatio: "1 / 1",
+                    borderRadius: "2px",
+                    background: photo.tone,
+                    backgroundImage: photo.image ? `url("${resolvePublicImage(photo.image)}")` : "none",
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                    backgroundRepeat: "no-repeat",
+                  }}
+                />
+                <Typography sx={{ textAlign: "center", mt: 1.2, color: "#6F4E37", fontSize: "1.1rem" }}>{photo.caption}</Typography>
+              </MotionBox>
+            ))}
+          </Box>
+        </Box>
+      </Box>
+
+      {activePhoto !== null && (
+        <Box
+          onClick={() => setActivePhoto(null)}
+          sx={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 1700,
+            background: "rgba(111,78,55,0.84)",
+            backdropFilter: "blur(8px)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            px: 2,
+          }}
+        >
+          <Button onClick={(e) => { e.stopPropagation(); movePhoto(-1); }} sx={{ minWidth: 0, position: "absolute", left: { xs: 4, md: 18 }, color: "#fff" }}>
+            <ChevronLeftRoundedIcon sx={{ fontSize: 38 }} />
+          </Button>
+          <Button onClick={(e) => { e.stopPropagation(); movePhoto(1); }} sx={{ minWidth: 0, position: "absolute", right: { xs: 4, md: 18 }, color: "#fff" }}>
+            <ChevronRightRoundedIcon sx={{ fontSize: 38 }} />
+          </Button>
+          <Button onClick={(e) => { e.stopPropagation(); setActivePhoto(null); }} sx={{ minWidth: 0, position: "absolute", top: 16, right: 16, color: "#fff" }}>
+            <CloseRoundedIcon />
+          </Button>
+          <Box onClick={(e) => e.stopPropagation()} sx={{ ...paperSx, width: "min(460px, 92vw)", p: "14px 14px 40px" }}>
+            <Box
+              sx={{
+                aspectRatio: "1 / 1",
+                borderRadius: "2px",
+                background: photos[activePhoto]?.tone,
+                backgroundImage: photos[activePhoto]?.image ? `url("${resolvePublicImage(photos[activePhoto].image)}")` : "none",
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                backgroundRepeat: "no-repeat",
+              }}
+            />
+            <Typography sx={{ textAlign: "center", mt: 1.2, color: "#6F4E37", fontSize: "1.25rem" }}>{photos[activePhoto]?.caption}</Typography>
+          </Box>
+        </Box>
+      )}
+    </MotionBox>
+  );
+};
+
+const DetailShell = ({ page, onBackToCards, children }) => {
+  const IconComp = page.icon;
+  return (
+    <MotionBox initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} sx={{ minHeight: "100vh", px: { xs: 2, md: 4 }, py: 3 }}>
+      <Box sx={{ maxWidth: 1080, mx: "auto" }}>
+        <Box sx={{ ...paperSx, p: { xs: 2.2, md: 4 }, border: "1.5px solid rgba(201,160,117,0.35)" }}>
+          <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
+            <Button onClick={onBackToCards} startIcon={<KeyboardBackspaceOutlinedIcon />} sx={{ color: "#7A5630" }}>
+              Back to Pages
+            </Button>
+            <Typography sx={{ color: "#8B7355", letterSpacing: 1.3, fontSize: "0.8rem", textTransform: "uppercase" }}>
+              {weddingStatic.date}
+            </Typography>
+          </Box>
+
+          <Box sx={{ textAlign: "center", mb: 3 }}>
+            <Box sx={{ color: "#C9A075", mb: 1 }}>
+              <IconComp sx={{ fontSize: "2.8rem" }} />
+            </Box>
+            <Typography sx={{ color: "#5D4E3C", fontSize: { xs: "2rem", md: "2.8rem" }, fontStyle: "italic", lineHeight: 1.1 }}>
+              {page.title}
+            </Typography>
+            <Typography sx={{ color: "#8B7355", fontSize: { xs: "1rem", md: "1.2rem" }, mt: 0.8 }}>
+              {page.hero}
+            </Typography>
+            <Divider sx={{ maxWidth: 180, mx: "auto", mt: 2, borderColor: "rgba(201,160,117,0.45)" }} />
+          </Box>
+
+          {children}
+        </Box>
+      </Box>
+    </MotionBox>
+  );
+};
+
+const StoryDetailPage = ({ page, onBackToCards }) => (
+  <DetailShell page={page} onBackToCards={onBackToCards}>
+    <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" }, gap: 2 }}>
+      <Box sx={{ p: 2, borderRadius: "8px", border: "1px solid rgba(201,160,117,0.28)", backgroundColor: "rgba(255,255,255,0.9)" }}>
+        <Typography sx={{ color: "#5D4E3C", fontSize: "1.45rem", mb: 1 }}>Narrative</Typography>
+        {page.details?.map((item, idx) => (
+          <Typography key={idx} sx={{ color: "#8B7355", fontSize: "1rem", lineHeight: 1.55, mb: 1 }}>
+            {item}
+          </Typography>
+        ))}
+      </Box>
+      <Box sx={{ p: 2, borderRadius: "8px", border: "1px solid rgba(201,160,117,0.28)", backgroundColor: "rgba(255,255,255,0.9)" }}>
+        <Typography sx={{ color: "#5D4E3C", fontSize: "1.45rem", mb: 1 }}>Milestones</Typography>
+        {page.timeline?.map((item) => (
+          <Box key={item.year} sx={{ pb: 1.2, mb: 1.2, borderBottom: "1px solid rgba(201,160,117,0.22)" }}>
+            <Typography sx={{ color: "#5D4E3C", fontSize: "1.05rem" }}>{item.year} - {item.label}</Typography>
+            <Typography sx={{ color: "#8B7355", fontSize: "0.95rem" }}>{item.note}</Typography>
+          </Box>
+        ))}
+      </Box>
+    </Box>
+  </DetailShell>
+);
+
+const ScheduleDetailPage = ({ page, onBackToCards }) => (
+  <DetailShell page={page} onBackToCards={onBackToCards}>
+    <Box sx={{ maxWidth: 780, mx: "auto", p: 2, borderRadius: "8px", border: "1px solid rgba(201,160,117,0.28)", backgroundColor: "rgba(255,255,255,0.9)" }}>
+      {page.items?.map((item, idx) => (
+        <Box key={item.time} sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "140px 1fr" }, gap: 1.2, pb: 1.5, mb: 1.5, borderBottom: idx === page.items.length - 1 ? "none" : "1px solid rgba(201,160,117,0.22)" }}>
+          <Typography sx={{ color: "#9C6B2F", fontSize: "1.05rem", fontWeight: 600 }}>{item.time}</Typography>
+          <Box>
+            <Typography sx={{ color: "#5D4E3C", fontSize: "1.1rem" }}>{item.event}</Typography>
+            <Typography sx={{ color: "#8B7355", fontSize: "0.95rem" }}>{item.note}</Typography>
+          </Box>
+        </Box>
+      ))}
+    </Box>
+  </DetailShell>
+);
+
+const TravelDetailPage = ({ page, onBackToCards }) => (
+  <DetailShell page={page} onBackToCards={onBackToCards}>
+    <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" }, gap: 2 }}>
+      <Box sx={{ p: 2, borderRadius: "8px", border: "1px solid rgba(201,160,117,0.28)", backgroundColor: "rgba(255,255,255,0.9)" }}>
+        <Typography sx={{ color: "#5D4E3C", fontSize: "1.45rem", mb: 1 }}>Guest Logistics</Typography>
+        {page.details?.map((item, idx) => (
+          <Typography key={idx} sx={{ color: "#8B7355", fontSize: "1rem", lineHeight: 1.5, mb: 1 }}>
+            {item}
+          </Typography>
+        ))}
+      </Box>
+      <Box sx={{ p: 2, borderRadius: "8px", border: "1px solid rgba(201,160,117,0.28)", backgroundColor: "rgba(255,255,255,0.9)" }}>
+        <Typography sx={{ color: "#5D4E3C", fontSize: "1.45rem", mb: 1 }}>Premium Support</Typography>
+        {page.cards?.map((item) => (
+          <Box key={item.title} sx={{ pb: 1.2, mb: 1.2, borderBottom: "1px solid rgba(201,160,117,0.22)" }}>
+            <Typography sx={{ color: "#5D4E3C", fontSize: "1.05rem" }}>{item.title}</Typography>
+            <Typography sx={{ color: "#8B7355", fontSize: "0.95rem" }}>{item.note}</Typography>
+          </Box>
+        ))}
+      </Box>
+    </Box>
+  </DetailShell>
+);
+
+const DetailsDetailPage = ({ page, onBackToCards }) => (
+  <DetailShell page={page} onBackToCards={onBackToCards}>
+    <Box sx={{ mb: 2.5 }}>
+      <Typography sx={{ color: "#5D4E3C", fontSize: "1.55rem", mb: 1 }}>Loving Parents</Typography>
+      <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" }, gap: 2 }}>
+        <Box sx={{ p: 2.2, borderRadius: "10px", border: "1px solid rgba(201,160,117,0.34)", background: "linear-gradient(145deg, rgba(255,255,255,0.95) 0%, rgba(250,245,238,0.95) 100%)" }}>
+          <Typography sx={{ color: "#9C6B2F", letterSpacing: 1.2, textTransform: "uppercase", fontSize: "0.78rem", mb: 0.8 }}>Bride's Parents</Typography>
+          <Typography sx={{ color: "#5D4E3C", fontSize: "1.04rem", lineHeight: 1.5 }}>{page.parents?.[2]}</Typography>
+          <Typography sx={{ color: "#5D4E3C", fontSize: "1.04rem", lineHeight: 1.5 }}>{page.parents?.[3]}</Typography>
+        </Box>
+        <Box sx={{ p: 2.2, borderRadius: "10px", border: "1px solid rgba(201,160,117,0.34)", background: "linear-gradient(145deg, rgba(255,255,255,0.95) 0%, rgba(250,245,238,0.95) 100%)" }}>
+          <Typography sx={{ color: "#9C6B2F", letterSpacing: 1.2, textTransform: "uppercase", fontSize: "0.78rem", mb: 0.8 }}>Groom's Parents</Typography>
+          <Typography sx={{ color: "#5D4E3C", fontSize: "1.04rem", lineHeight: 1.5 }}>{page.parents?.[0]}</Typography>
+          <Typography sx={{ color: "#5D4E3C", fontSize: "1.04rem", lineHeight: 1.5 }}>{page.parents?.[1]}</Typography>
+        </Box>
+      </Box>
+    </Box>
+
+    <Box sx={{ p: 2.2, borderRadius: "10px", border: "1px solid rgba(201,160,117,0.28)", backgroundColor: "rgba(255,255,255,0.92)", mb: 2.5 }}>
+      <Typography sx={{ color: "#5D4E3C", fontSize: "1.45rem", mb: 0.9 }}>Principal Sponsors</Typography>
+      <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" }, gap: 0.5 }}>
+        {page.principalSponsors?.map((name) => (
+          <Typography key={name} sx={{ color: "#8B7355", fontSize: "0.98rem", py: 0.2 }}>{name}</Typography>
+        ))}
+      </Box>
+    </Box>
+
+    <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 1fr 1fr" }, gap: 2, mb: 2.5 }}>
+      <Box sx={{ p: 2, borderRadius: "10px", border: "1px solid rgba(201,160,117,0.28)", backgroundColor: "rgba(255,255,255,0.92)" }}>
+        <Typography sx={{ color: "#5D4E3C", fontSize: "1.2rem", mb: 0.4 }}>Best Girl</Typography>
+        <Typography sx={{ color: "#8B7355" }}>{page.entourage?.bestGirl}</Typography>
+      </Box>
+      <Box sx={{ p: 2, borderRadius: "10px", border: "1px solid rgba(201,160,117,0.28)", backgroundColor: "rgba(255,255,255,0.92)" }}>
+        <Typography sx={{ color: "#5D4E3C", fontSize: "1.2rem", mb: 0.4 }}>Matron of Honor</Typography>
+        <Typography sx={{ color: "#8B7355" }}>{page.entourage?.matronOfHonor}</Typography>
+      </Box>
+      <Box sx={{ p: 2, borderRadius: "10px", border: "1px solid rgba(201,160,117,0.28)", backgroundColor: "rgba(255,255,255,0.92)" }}>
+        <Typography sx={{ color: "#5D4E3C", fontSize: "1.2rem", mb: 0.4 }}>Best Man</Typography>
+        <Typography sx={{ color: "#8B7355" }}>{page.entourage?.bestMan}</Typography>
+      </Box>
+    </Box>
+
+    <Box sx={{ mb: 2.5 }}>
+      <Typography sx={{ color: "#5D4E3C", fontSize: "1.45rem", mb: 1 }}>Secondary Sponsors</Typography>
+      <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 1fr 1fr" }, gap: 1.5 }}>
+        {Object.entries(page.secondarySponsors || {}).map(([group, names]) => (
+          <Box
+            key={group}
+            sx={{
+              p: 1.8,
+              borderRadius: "10px",
+              border: "1px solid rgba(201,160,117,0.3)",
+              background: "linear-gradient(160deg, rgba(255,255,255,0.95) 0%, rgba(248,241,232,0.94) 100%)",
+              boxShadow: "0 6px 18px rgba(156,107,47,0.08)",
+              position: "relative",
+              overflow: "hidden",
+            }}
+          >
+            <Box sx={{ position: "absolute", top: -24, right: -24, width: 70, height: 70, borderRadius: "50%", backgroundColor: "rgba(201,160,117,0.16)" }} />
+            <Typography sx={{ color: "#5D4E3C", fontSize: "1.02rem", mb: 0.55, position: "relative" }}>{group}</Typography>
+            {names.map((n) => (
+              <Typography key={n} sx={{ color: "#8B7355", fontSize: "0.94rem", lineHeight: 1.45, position: "relative" }}>
+                {n}
+              </Typography>
+            ))}
+          </Box>
+        ))}
+      </Box>
+    </Box>
+
+    <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 1fr 1fr" }, gap: 2, mb: 2.5 }}>
+      <Box sx={{ p: 2, borderRadius: "10px", border: "1px solid rgba(201,160,117,0.28)", backgroundColor: "rgba(255,255,255,0.92)" }}>
+        <Typography sx={{ color: "#5D4E3C", fontSize: "1.2rem", mb: 0.4 }}>Ring Bearer</Typography>
+        {page.ringBearers?.map((n) => <Typography key={n} sx={{ color: "#8B7355", fontSize: "0.95rem" }}>{n}</Typography>)}
+      </Box>
+      <Box sx={{ p: 2, borderRadius: "10px", border: "1px solid rgba(201,160,117,0.28)", backgroundColor: "rgba(255,255,255,0.92)" }}>
+        <Typography sx={{ color: "#5D4E3C", fontSize: "1.2rem", mb: 0.4 }}>Bridesmaid</Typography>
+        {page.bridesmaids?.map((n) => <Typography key={n} sx={{ color: "#8B7355", fontSize: "0.95rem" }}>{n}</Typography>)}
+      </Box>
+      <Box sx={{ p: 2, borderRadius: "10px", border: "1px solid rgba(201,160,117,0.28)", backgroundColor: "rgba(255,255,255,0.92)" }}>
+        <Typography sx={{ color: "#5D4E3C", fontSize: "1.2rem", mb: 0.4 }}>Groomsmen</Typography>
+        {page.groomsmen?.map((n) => <Typography key={n} sx={{ color: "#8B7355", fontSize: "0.95rem" }}>{n}</Typography>)}
+      </Box>
+    </Box>
+
+    <Box sx={{ p: 2.2, borderRadius: "10px", border: "1px solid rgba(201,160,117,0.28)", backgroundColor: "rgba(255,255,255,0.92)" }}>
+      <Typography sx={{ color: "#5D4E3C", fontSize: "1.4rem", mb: 0.8 }}>Guest Guide</Typography>
+
+      <Box sx={{ mb: 2.2 }}>
+        <Typography sx={{ color: "#5D4E3C", fontSize: "1.08rem", mb: 0.65, letterSpacing: 0.6, textTransform: "uppercase" }}>Dress Code</Typography>
+        {page.guestGuide?.dressCode?.map((line, idx) => (
+          <Typography key={idx} sx={{ color: "#8B7355", fontSize: "1rem", lineHeight: 1.55, mb: 0.75 }}>{line}</Typography>
+        ))}
+      </Box>
+
+      <Box sx={{ mb: 2.2 }}>
+        <Typography sx={{ color: "#5D4E3C", fontSize: "1.08rem", mb: 0.65, letterSpacing: 0.6, textTransform: "uppercase" }}>Color Palette - Guests</Typography>
+        <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
+          {page.guestGuide?.paletteGuests?.map((hex) => (
+            <Box key={hex} sx={{ display: "flex", alignItems: "center", gap: 0.5, pr: 1 }}>
+              <Box sx={{ width: 20, height: 20, borderRadius: "50%", backgroundColor: hex, border: "1px solid rgba(0,0,0,0.15)" }} />
+              <Typography sx={{ color: "#8B7355", fontSize: "0.86rem" }}>{hex}</Typography>
+            </Box>
+          ))}
+        </Box>
+      </Box>
+
+      <Box sx={{ mb: 2.2 }}>
+        <Typography sx={{ color: "#5D4E3C", fontSize: "1.08rem", mb: 0.65, letterSpacing: 0.6, textTransform: "uppercase" }}>Color Palette - Principal Sponsors</Typography>
+        <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
+          {page.guestGuide?.paletteSponsors?.map((hex) => (
+            <Box key={hex} sx={{ display: "flex", alignItems: "center", gap: 0.5, pr: 1 }}>
+              <Box sx={{ width: 20, height: 20, borderRadius: "50%", backgroundColor: hex, border: "1px solid rgba(0,0,0,0.15)" }} />
+              <Typography sx={{ color: "#8B7355", fontSize: "0.86rem" }}>{hex}</Typography>
+            </Box>
+          ))}
+        </Box>
+      </Box>
+
+      <Box sx={{ mb: 0.4 }}>
+        <Typography sx={{ color: "#5D4E3C", fontSize: "1.08rem", mb: 0.65, letterSpacing: 0.6, textTransform: "uppercase" }}>Important Notes</Typography>
+        {page.guestGuide?.notes?.map((note, idx) => (
+          <Typography key={idx} sx={{ color: "#8B7355", fontSize: "0.96rem", lineHeight: 1.6, mb: 1.05 }}>
+            {note}
+          </Typography>
+        ))}
+      </Box>
+    </Box>
+  </DetailShell>
+);
+
+const PhotosDetailPage = ({ page, onBackToCards }) => {
+  const isDesktop = useMediaQuery((theme) => theme.breakpoints.up("md"));
+  const photos = useMemo(
+    () =>
+      uploadedPhotos.length
+        ? uploadedPhotos
+        : (page.cards || []).map((item) => ({
+            ...item,
+            image: item.image ? resolvePublicImage(item.image) : null,
+          })),
+    [page.cards],
+  );
+  const [activePhoto, setActivePhoto] = useState(0);
+
+  const movePhoto = (direction) => {
+    if (!photos.length) return;
+    setActivePhoto((prev) => (prev + direction + photos.length) % photos.length);
+  };
+
+  const currentIndex = photos.length ? ((activePhoto % photos.length) + photos.length) % photos.length : 0;
+  const wrappedIndex = (idx) => (idx + photos.length) % photos.length;
+  const current = photos[currentIndex];
+  const left = photos[wrappedIndex(currentIndex - 1)];
+  const right = photos[wrappedIndex(currentIndex + 1)];
+
+  return (
+    <DetailShell page={page} onBackToCards={onBackToCards}>
+      {!photos.length ? (
+        <Typography sx={{ color: "#8B7355", textAlign: "center" }}>
+          Upload photos to public/images/photos to display them here.
+        </Typography>
+      ) : isDesktop ? (
+        <Box sx={{ maxWidth: 940, mx: "auto" }}>
+          <Box sx={{ position: "relative", display: "grid", gridTemplateColumns: "1fr 1.25fr 1fr", gap: 1.2, alignItems: "center" }}>
+            {photos.length > 1 ? (
+              <MotionBox
+                onClick={() => setActivePhoto(wrappedIndex(activePhoto - 1))}
+                whileHover={{ scale: 1.01 }}
+                sx={{ ...paperSx, p: "8px 8px 12px", cursor: "pointer", opacity: 0.82 }}
+              >
+                <Box
+                  sx={{
+                    aspectRatio: "4 / 5",
+                    borderRadius: "2px",
+                    background: left?.tone || "linear-gradient(135deg, #cbb8a7 0%, #ab9583 100%)",
+                    backgroundImage: left?.image ? `url("${left.image}")` : "none",
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                    backgroundRepeat: "no-repeat",
+                  }}
+                />
+              </MotionBox>
+            ) : (
+              <Box />
+            )}
+
+            <Box sx={{ ...paperSx, p: "9px 9px 14px", transform: "scale(1.02)" }}>
+              <Box
+                sx={{
+                  aspectRatio: "4 / 5",
+                  borderRadius: "2px",
+                  background: current?.tone || "linear-gradient(135deg, #cbb8a7 0%, #ab9583 100%)",
+                  backgroundImage: current?.image ? `url("${current.image}")` : "none",
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                  backgroundRepeat: "no-repeat",
+                }}
+              />
+              <Typography sx={{ textAlign: "center", mt: 0.8, color: "#5D4E3C", fontSize: "1.02rem" }}>{current?.title}</Typography>
+              <Typography sx={{ textAlign: "center", color: "#8B7355", fontSize: "0.86rem" }}>
+                {currentIndex + 1} / {photos.length}
+              </Typography>
+            </Box>
+
+            {photos.length > 1 ? (
+              <MotionBox
+                onClick={() => setActivePhoto(wrappedIndex(activePhoto + 1))}
+                whileHover={{ scale: 1.01 }}
+                sx={{ ...paperSx, p: "8px 8px 12px", cursor: "pointer", opacity: 0.82 }}
+              >
+                <Box
+                  sx={{
+                    aspectRatio: "4 / 5",
+                    borderRadius: "2px",
+                    background: right?.tone || "linear-gradient(135deg, #cbb8a7 0%, #ab9583 100%)",
+                    backgroundImage: right?.image ? `url("${right.image}")` : "none",
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                    backgroundRepeat: "no-repeat",
+                  }}
+                />
+              </MotionBox>
+            ) : (
+              <Box />
+            )}
+
+            {photos.length > 1 && (
+              <>
+                <Button
+                  onClick={() => movePhoto(-1)}
+                  sx={{
+                    minWidth: 0,
+                    width: 38,
+                    height: 38,
+                    borderRadius: "50%",
+                    position: "absolute",
+                    left: -12,
+                    top: "50%",
+                    transform: "translateY(-50%)",
+                    background: "rgba(255,255,255,0.92)",
+                    color: "#7A5630",
+                    "&:hover": { background: "rgba(255,255,255,1)" },
+                  }}
+                >
+                  <ChevronLeftRoundedIcon />
+                </Button>
+                <Button
+                  onClick={() => movePhoto(1)}
+                  sx={{
+                    minWidth: 0,
+                    width: 38,
+                    height: 38,
+                    borderRadius: "50%",
+                    position: "absolute",
+                    right: -12,
+                    top: "50%",
+                    transform: "translateY(-50%)",
+                    background: "rgba(255,255,255,0.92)",
+                    color: "#7A5630",
+                    "&:hover": { background: "rgba(255,255,255,1)" },
+                  }}
+                >
+                  <ChevronRightRoundedIcon />
+                </Button>
+              </>
+            )}
+          </Box>
+        </Box>
+      ) : (
+        <Box>
+          <Box sx={{ position: "relative", ...paperSx, p: { xs: "10px 10px 18px", md: "12px 12px 20px" }, maxWidth: 760, mx: "auto" }}>
+            <Box
+              sx={{
+                aspectRatio: "4 / 5",
+                borderRadius: "2px",
+                background: current?.tone || "linear-gradient(135deg, #cbb8a7 0%, #ab9583 100%)",
+                backgroundImage: current?.image ? `url("${current.image}")` : "none",
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                backgroundRepeat: "no-repeat",
+              }}
+            />
+            <Typography sx={{ textAlign: "center", mt: 1, color: "#5D4E3C", fontSize: "1.1rem" }}>{current?.title}</Typography>
+            <Typography sx={{ textAlign: "center", color: "#8B7355", fontSize: "0.9rem" }}>
+              {currentIndex + 1} / {photos.length}
+            </Typography>
+
+            {photos.length > 1 && (
+              <>
+                <Button
+                  onClick={() => movePhoto(-1)}
+                  sx={{
+                    minWidth: 0,
+                    width: 44,
+                    height: 44,
+                    borderRadius: "50%",
+                    position: "absolute",
+                    left: { xs: 12, md: 18 },
+                    top: "50%",
+                    transform: "translateY(-50%)",
+                    background: "rgba(255,255,255,0.9)",
+                    color: "#7A5630",
+                    "&:hover": { background: "rgba(255,255,255,1)" },
+                  }}
+                >
+                  <ChevronLeftRoundedIcon />
+                </Button>
+                <Button
+                  onClick={() => movePhoto(1)}
+                  sx={{
+                    minWidth: 0,
+                    width: 44,
+                    height: 44,
+                    borderRadius: "50%",
+                    position: "absolute",
+                    right: { xs: 12, md: 18 },
+                    top: "50%",
+                    transform: "translateY(-50%)",
+                    background: "rgba(255,255,255,0.9)",
+                    color: "#7A5630",
+                    "&:hover": { background: "rgba(255,255,255,1)" },
+                  }}
+                >
+                  <ChevronRightRoundedIcon />
+                </Button>
+              </>
+            )}
+          </Box>
+
+          {photos.length > 1 && (
+            <Box sx={{ mt: 1.5, display: "flex", gap: 1, overflowX: "auto", pb: 0.6, justifyContent: { xs: "flex-start", md: "center" } }}>
+              {photos.map((item, idx) => (
+                <Box
+                  key={`${item.title}-${idx}`}
+                  onClick={() => setActivePhoto(idx)}
+                  sx={{
+                    width: 72,
+                    height: 90,
+                    flex: "0 0 auto",
+                    borderRadius: "3px",
+                    cursor: "pointer",
+                    border: idx === currentIndex ? "2px solid #C9A075" : "1px solid rgba(201,160,117,0.35)",
+                    background: item.tone || "linear-gradient(135deg, #cbb8a7 0%, #ab9583 100%)",
+                    backgroundImage: item.image ? `url("${item.image}")` : "none",
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                    backgroundRepeat: "no-repeat",
+                  }}
+                />
+              ))}
+            </Box>
+          )}
+        </Box>
+      )}
+    </DetailShell>
+  );
+};
+
+const DetailPage = ({ pageKey, page, onBackToCards }) => {
+  if (pageKey === "welcome") return <WelcomeDetailPage page={page} onBackToCards={onBackToCards} />;
+  if (pageKey === "story") return <StoryDetailPage page={page} onBackToCards={onBackToCards} />;
+  if (pageKey === "schedule") return <ScheduleDetailPage page={page} onBackToCards={onBackToCards} />;
+  if (pageKey === "travel") return <TravelDetailPage page={page} onBackToCards={onBackToCards} />;
+  if (pageKey === "details") return <DetailsDetailPage page={page} onBackToCards={onBackToCards} />;
+  if (pageKey === "photos") return <PhotosDetailPage page={page} onBackToCards={onBackToCards} />;
+  return null;
+};
+
+export const SharedOnepager = ({ onBackToInvitation, variant = "desktop" }) => {
+  const [opened, setOpened] = useState(() => (typeof window !== "undefined" ? Boolean(slugFromHash()) : false));
+  const [activePage, setActivePage] = useState(() => (typeof window !== "undefined" ? slugFromHash() : null));
+  const isMobile = variant === "mobile";
+  const isTablet = variant === "tablet";
+  const positions = isTablet ? tabletPositions : desktopPositions;
+  const pages = weddingStatic.pages;
+
+  const cards = useMemo(
+    () =>
+      Object.keys(pages).map((key) => ({
+        id: key,
+        ...pages[key],
+      })),
+    [pages],
+  );
+  const useScatteredLayout = !isMobile && cards.length === positions.length;
+
+  useEffect(() => {
+    const onHashChange = () => {
+      const slug = slugFromHash();
+      if (slug) {
+        setOpened(true);
+        setActivePage(slug);
+      } else {
+        setActivePage(null);
+      }
+    };
+
+    window.addEventListener("hashchange", onHashChange);
+    return () => window.removeEventListener("hashchange", onHashChange);
+  }, []);
+
+  const openCardPage = (id) => {
+    setActivePage(id);
+    window.history.pushState(null, "", `#${id}`);
+  };
+
+  const backToCards = () => {
+    setActivePage(null);
+    window.history.replaceState(null, "", `${window.location.pathname}${window.location.search}`);
+  };
+
+  return (
+    <Box
+      sx={{
+        position: "relative",
+        width: "100%",
+        minHeight: "100vh",
+        overflow: "hidden",
+        fontFamily: '"Cormorant Garamond", Georgia, serif',
+        background: "transparent",
+      }}
+    >
+      {sparkleStyles.map((s, idx) => (
+        <MotionBox
+          key={idx}
+          sx={{ position: "absolute", width: 5, height: 5, borderRadius: "50%", backgroundColor: "#C9A075", ...s }}
+          animate={{ opacity: [0, 1, 0], scale: [0.4, 1, 0.4] }}
+          transition={{ duration: 2, repeat: Infinity, delay: s.delay, ease: "easeInOut" }}
+        />
+      ))}
+
+      {!opened && (
+        <Box sx={{ position: "absolute", inset: 0, zIndex: 40, display: "flex", alignItems: "center", justifyContent: "center", px: 2 }}>
+          <MotionBox
+            whileHover={{ scale: 1.04 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => setOpened(true)}
+            sx={{
+              ...paperSx,
+              width: isMobile ? "100%" : isTablet ? 460 : 520,
+              maxWidth: "100%",
+              height: isMobile ? 300 : 330,
+              cursor: "pointer",
+              p: 4,
+              position: "relative",
+              textAlign: "center",
+              display: "grid",
+              alignItems: "center",
+              justifyItems: "center",
+            }}
+          >
+            <Button onClick={(e) => { e.stopPropagation(); onBackToInvitation(); }} variant="text" sx={{ position: "absolute", top: 8, right: 8, color: "#8B7355", fontSize: "0.8rem" }}>
+              {weddingStatic.backToInvitation}
+            </Button>
+            <Box sx={{ color: "#C9A075", lineHeight: 1 }}>
+              <ChurchOutlinedIcon sx={{ fontSize: "3rem" }} />
+            </Box>
+            <Typography sx={{ fontSize: isMobile ? "2rem" : "2.6rem", color: "#5D4E3C", fontStyle: "italic" }}>{weddingStatic.couple}</Typography>
+            <Typography sx={{ color: "#8B7355", letterSpacing: 1.8, fontSize: "0.9rem" }}>{weddingStatic.date}</Typography>
+            <Typography sx={{ color: "#C9A075", textTransform: "uppercase", letterSpacing: 2, fontSize: "0.75rem" }}>Click to open</Typography>
+          </MotionBox>
+        </Box>
+      )}
+
+      {opened && !activePage && (
+        <Box sx={{ position: "relative", minHeight: "100vh", pt: 2, px: 2, pb: 2, display: "flex", flexDirection: "column" }}>
+          <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 1.5 }}>
+            <Box>
+              <Typography sx={{ color: "#5D4E3C", fontSize: isMobile ? "1.5rem" : "2.1rem", fontStyle: "italic", lineHeight: 1 }}>
+                {weddingStatic.couple}
+              </Typography>
+              <Typography sx={{ color: "#8B7355", fontSize: "0.85rem", letterSpacing: 1.5 }}>{weddingStatic.date}</Typography>
+            </Box>
+            <Button
+              onClick={onBackToInvitation}
+              variant="outlined"
+              sx={{ borderColor: "#C9A075", color: "#7A5630", fontFamily: '"Cormorant Garamond", Georgia, serif', "&:hover": { borderColor: "#9C6B2F", backgroundColor: "rgba(201,160,117,0.1)" } }}
+            >
+              {weddingStatic.backToInvitation}
+            </Button>
+          </Box>
+
+          <Box sx={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
+            {useScatteredLayout ? (
+              <Box sx={{ position: "relative", height: isTablet ? "70vh" : "72vh", width: "100%" }}>
+                {cards.map((card, idx) => (
+                  <PageCard
+                    key={card.id}
+                    page={card}
+                    isTablet={isTablet}
+                    styleSx={{
+                      width: isTablet ? "30%" : "28%",
+                      height: isTablet ? "43%" : "45%",
+                      position: "absolute",
+                      p: 3,
+                      transform: `rotate(${positions[idx].rotate})`,
+                      zIndex: positions[idx].zIndex,
+                      ...positions[idx],
+                    }}
+                    onClick={() => openCardPage(card.id)}
+                  />
+                ))}
+              </Box>
+            ) : (
+              <Box
+                sx={{
+                  display: "flex",
+                  flexWrap: "wrap",
+                  justifyContent: "center",
+                  alignContent: "center",
+                  gap: 1.5,
+                  py: 1,
+                  width: "100%",
+                }}
+              >
+                {cards.map((card, idx) => (
+                  <PageCard
+                    key={card.id}
+                    page={card}
+                    isMobile={isMobile}
+                    isTablet={isTablet}
+                    styleSx={{
+                      minHeight: isMobile ? 190 : 220,
+                      p: isMobile ? 2 : 2.4,
+                      width: isMobile ? "calc(50% - 12px)" : "calc(33.333% - 12px)",
+                      minWidth: isMobile ? 148 : isTablet ? 190 : 220,
+                      maxWidth: isMobile ? 230 : 300,
+                      transform: `rotate(${idx % 2 === 0 ? -2 : 2}deg)`,
+                    }}
+                    onClick={() => openCardPage(card.id)}
+                  />
+                ))}
+              </Box>
+            )}
+          </Box>
+        </Box>
+      )}
+
+      {opened && activePage && <DetailPage pageKey={activePage} page={pages[activePage]} onBackToCards={backToCards} />}
+    </Box>
+  );
+};
+
+export default SharedOnepager;

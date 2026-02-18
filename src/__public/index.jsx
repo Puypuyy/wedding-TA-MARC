@@ -1,106 +1,96 @@
 // Libraries
-import { Suspense } from 'react';
-import { Box, ThemeProvider, CssBaseline } from '@mui/material';
+import { Suspense, useState } from 'react';
+import { Box, ThemeProvider, CssBaseline, useMediaQuery } from '@mui/material';
 import { createTheme } from '@mui/material/styles';
-import Invitation from './Desktop/Index';
+import InvitationDesktop from './Desktop/Index';
+import InvitationTablet from './Tablet/Index';
+import InvitationMobile from './Mobile/Index';
+import OnepagerResponsive from './onepager/index';
+import BackgroundMusicControl from '../core/reusables/BackgroundMusicControl';
+import RomanticBackdrop from '../core/reusables/RomanticBackdrop';
+import RsvpDialog from './RsvpDialog';
 
+const InvitationResponsive = ({ onRsvpClick }) => {
+  const isDesktop = useMediaQuery((theme) => theme.breakpoints.up('md'));
+  const isTablet = useMediaQuery((theme) =>
+    theme.breakpoints.between('sm', 'md')
+  );
+  if (isDesktop) return <InvitationDesktop onRsvpClick={onRsvpClick} />;
+  if (isTablet) return <InvitationTablet onRsvpClick={onRsvpClick} />;
+  return <InvitationMobile onRsvpClick={onRsvpClick} />;
+};
+
+const pageTheme = createTheme({
+  palette: {
+    background: {
+      default: '#F3EEDD',
+      paper: '#FFFFFF',
+    },
+    primary: {
+      main: '#9C6B2F',
+      dark: '#7A5630',
+      light: '#EFE6D2',
+    },
+    secondary: {
+      main: '#8FAF9A',
+      dark: '#6F927D',
+      light: '#DCE8DF',
+    },
+    info: {
+      main: '#A8C6E5',
+      dark: '#7B9CBC',
+      light: '#DDEAF7',
+    },
+    text: {
+      primary: '#7A5630',
+      secondary: '#A79C8E',
+    },
+    common: {
+      white: '#FFFFFF',
+      black: '#1F1611',
+    },
+  },
+  typography: {
+    fontFamily: ['"Cormorant Garamond"', 'Georgia', 'serif'].join(','),
+    h1: {
+      fontFamily: '"Cormorant Garamond", Georgia, serif',
+      letterSpacing: 1.2,
+    },
+    h2: {
+      fontFamily: '"Cormorant Garamond", Georgia, serif',
+      letterSpacing: 1.1,
+    },
+    button: {
+      textTransform: 'none',
+      fontFamily: '"Cormorant Garamond", Georgia, serif',
+      letterSpacing: 0.8,
+      fontWeight: 600,
+    },
+  },
+  shape: {
+    borderRadius: 20,
+  },
+  components: {
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          borderRadius: 999,
+        },
+      },
+    },
+    MuiPaper: {
+      styleOverrides: {
+        root: {
+          boxShadow: '0 12px 28px rgba(0,0,0,0.06)',
+        },
+      },
+    },
+  },
+});
 
 export const Index = () => {
-  const pageTheme = createTheme({
-    palette: {
-      background: {
-        default: '#F6EFE9', // soft ivory / canvas-like background
-        paper: '#FFFFFF',
-      },
-      primary: {
-        main: '#9C7C38',   // champagne gold
-        dark: '#8B6E30',
-        light: '#E6D8B8',
-      },
-      secondary: {
-        main: '#D9C5A6',   // warm neutral beige
-        dark: '#B8A889',
-        light: '#F3ECE3',
-      },
-      info: {
-        main: '#A38F6A',
-        dark: '#7A6A4A',
-        light: '#D6CBB5',
-      },
-      error: {
-        main: '#C94A4A',
-      },
-      warning: {
-        main: '#E6A23C',
-      },
-      success: {
-        main: '#6BA368',
-      },
-      text: {
-        primary: '#3A3A3A',   // elegant dark gray (better than pure black)
-        secondary: '#7A7A7A',
-      },
-      common: {
-        white: '#FFFFFF',
-        black: '#000000',
-      },
-    },
-    typography: {
-      fontFamily: [
-        'Playfair Display',
-        'Inter',
-        '-apple-system',
-        'BlinkMacSystemFont',
-        'Segoe UI',
-        'Roboto',
-      ].join(','),
-      h1: {
-        fontWeight: 600,
-        letterSpacing: 1,
-      },
-      h2: {
-        fontWeight: 500,
-      },
-      body1: {
-        fontSize: '1rem',
-      },
-      button: {
-        textTransform: 'none',
-        fontWeight: 500,
-        letterSpacing: 0.5,
-      },
-    },
-    shape: {
-      borderRadius: 16,
-    },
-    components: {
-      MuiButton: {
-        styleOverrides: {
-          root: {
-            borderRadius: 50,
-            paddingLeft: 32,
-            paddingRight: 32,
-            paddingTop: 12,
-            paddingBottom: 12,
-          },
-        },
-      },
-      MuiDivider: {
-        styleOverrides: {
-          root: {
-            backgroundColor: '#E6D8B8',
-          },
-        },
-      },
-      MuiPaper: {
-        styleOverrides: {
-          root: {
-            boxShadow: '0 20px 40px rgba(0,0,0,0.08)',
-          },
-        },
-      },
-    },
-  });
+  const [view, setView] = useState('invitation'); // 'invitation' | 'onepager'
+  const [rsvpOpen, setRsvpOpen] = useState(false);
 
   return (
     <ThemeProvider theme={pageTheme}>
@@ -126,10 +116,25 @@ export const Index = () => {
           justifyContent="center"
           alignItems="center"
           sx={{
-            background: 'linear-gradient(135deg, #FDFBFB 0%, #F6EFE9 100%)',
+            position: 'relative',
+            background: 'transparent',
           }}
         >
-          <Invitation />
+          <RomanticBackdrop />
+          {view === 'onepager' ? (
+            <OnepagerResponsive onBackToInvitation={() => setView('invitation')} />
+          ) : (
+            <InvitationResponsive onRsvpClick={() => setRsvpOpen(true)} />
+          )}
+          <RsvpDialog
+            open={rsvpOpen}
+            onClose={() => setRsvpOpen(false)}
+            onViewDetails={() => {
+              setRsvpOpen(false);
+              setView('onepager');
+            }}
+          />
+          <BackgroundMusicControl />
         </Box>
       </Suspense>
     </ThemeProvider>
@@ -137,3 +142,4 @@ export const Index = () => {
 };
 
 export default Index;
+
