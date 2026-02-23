@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Alert, Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Stack, TextField, Typography } from "@mui/material";
-import { submitRsvp, validateRsvpCode } from "./rsvpApi";
+import { fetchRsvp, submitRsvp } from "./rsvpApi";
 
 const emptyState = {
   code: "",
@@ -15,12 +15,31 @@ const emptyState = {
 
 const RsvpDialog = ({ open, onClose, onViewDetails }) => {
   const [state, setState] = useState(emptyState);
+  const isChecked = Boolean(state.validated);
+  const isAlreadyConfirmed = Boolean(
+    state.validated?.isConfirmed ||
+      String(state.validated?.attendanceStatus || "").toLowerCase() === "confirmed" ||
+      Number(state.validated?.confirmedSeats || 0) > 0,
+  );
 
   useEffect(() => {
     if (!open) setState(emptyState);
   }, [open]);
 
-  const setField = (field, value) => setState((prev) => ({ ...prev, [field]: value, error: "", success: "" }));
+  const setField = (field, value) =>
+    setState((prev) => ({
+      ...prev,
+      [field]: value,
+      error: "",
+      success: "",
+      ...(field === "code"
+        ? {
+            validated: null,
+            attendingSeats: "",
+            note: "",
+          }
+        : {}),
+    }));
 
   const handleValidate = async () => {
     if (!state.code.trim()) {
@@ -30,7 +49,7 @@ const RsvpDialog = ({ open, onClose, onViewDetails }) => {
 
     try {
       setState((prev) => ({ ...prev, validating: true, error: "", success: "" }));
-      const data = await validateRsvpCode(state.code);
+      const data = await fetchRsvp(state.code);
       const reservedSeats = Number(data.reservedSeats || 0);
       const confirmedSeats = Number(data.confirmedSeats || 0);
       setState((prev) => ({
@@ -41,7 +60,9 @@ const RsvpDialog = ({ open, onClose, onViewDetails }) => {
           reservedSeats,
           confirmedSeats,
           availableSeats: Math.max(reservedSeats - confirmedSeats, 0),
+          attendanceStatus: data.attendanceStatus,
           status: data.status,
+          isConfirmed: Boolean(data.isConfirmed),
         },
         attendingSeats: confirmedSeats > 0 ? String(confirmedSeats) : "",
       }));
@@ -67,7 +88,7 @@ const RsvpDialog = ({ open, onClose, onViewDetails }) => {
       return;
     }
     if (seats > state.validated.reservedSeats) {
-      setState((prev) => ({ ...prev, error: `You can only confirm up to ${state.validated.reservedSeats} seats.` }));
+      setState((prev) => ({ ...prev, error: `Seats to attend must not be more than ${state.validated.reservedSeats}.` }));
       return;
     }
 
@@ -77,6 +98,7 @@ const RsvpDialog = ({ open, onClose, onViewDetails }) => {
         code: state.code,
         attendingSeats: seats,
         note: state.note,
+        isConfirmed: 1,
       });
       setState((prev) => ({
         ...prev,
@@ -87,7 +109,43 @@ const RsvpDialog = ({ open, onClose, onViewDetails }) => {
           reservedSeats: Number(data.reservedSeats || prev.validated.reservedSeats),
           confirmedSeats: Number(data.confirmedSeats ?? seats),
           availableSeats: Math.max(Number(data.reservedSeats || prev.validated.reservedSeats) - Number(data.confirmedSeats ?? seats), 0),
+          attendanceStatus: data.attendanceStatus || prev.validated.attendanceStatus,
           status: data.status || prev.validated.status,
+          isConfirmed: Boolean(data.isConfirmed || Number(data.confirmedSeats ?? seats) > 0),
+        },
+      }));
+    } catch (error) {
+      setState((prev) => ({
+        ...prev,
+        submitting: false,
+        error: error.message || "Failed to submit RSVP.",
+      }));
+    }
+  };
+
+  const handleNotAttending = async () => {
+    if (!state.validated) return;
+    try {
+      setState((prev) => ({ ...prev, submitting: true, error: "", success: "" }));
+      const data = await submitRsvp({
+        code: state.code,
+        attendingSeats: 0,
+        note: state.note,
+        isConfirmed: 0,
+      });
+      setState((prev) => ({
+        ...prev,
+        submitting: false,
+        attendingSeats: "0",
+        success: data.message || "Your RSVP has been recorded as not attending.",
+        validated: {
+          guestName: data.guestName || prev.validated.guestName,
+          reservedSeats: Number(data.reservedSeats || prev.validated.reservedSeats),
+          confirmedSeats: Number(data.confirmedSeats ?? 0),
+          availableSeats: Math.max(Number(data.reservedSeats || prev.validated.reservedSeats) - Number(data.confirmedSeats ?? 0), 0),
+          attendanceStatus: data.attendanceStatus || "Confirmed",
+          status: data.status || prev.validated.status,
+          isConfirmed: true,
         },
       }));
     } catch (error) {
@@ -126,34 +184,45 @@ const RsvpDialog = ({ open, onClose, onViewDetails }) => {
             {state.validating ? "Checking..." : "Check Code"}
           </Button>
 
-          {state.validated ? (
+          {isChecked ? (
             <Box sx={{ p: 2, border: "1px solid rgba(156,107,47,0.25)", borderRadius: "10px", backgroundColor: "rgba(255,255,255,0.8)" }}>
               <Typography sx={{ color: "#5D4E3C", fontSize: "1.1rem" }}>
                 Guest: <strong>{state.validated.guestName}</strong>
               </Typography>
               <Typography sx={{ color: "#8B7355" }}>Reserved seats: {state.validated.reservedSeats}</Typography>
-              <Typography sx={{ color: "#8B7355" }}>Already confirmed: {state.validated.confirmedSeats}</Typography>
+              <Typography sx={{ color: "#8B7355" }}>Seats confirmed: {state.validated.confirmedSeats}</Typography>
+              <Typography sx={{ color: "#8B7355" }}>Available seats: {state.validated.availableSeats}</Typography>
+              <Typography sx={{ color: "#8B7355" }}>Attendance status: {state.validated.attendanceStatus || "Pending"}</Typography>
+              {isAlreadyConfirmed ? (
+                <Alert severity="info" sx={{ mt: 1.2 }}>
+                  This RSVP is already confirmed. Submission fields are disabled.
+                </Alert>
+              ) : null}
             </Box>
           ) : null}
 
-          <TextField
-            label="How many seats are attending?"
-            type="number"
-            value={state.attendingSeats}
-            onChange={(e) => setField("attendingSeats", e.target.value)}
-            inputProps={{ min: 0, max: state.validated?.reservedSeats ?? 0 }}
-            disabled={!state.validated}
-            fullWidth
-          />
+          {isChecked && !isAlreadyConfirmed ? (
+            <>
+              <TextField
+                label="How many seats are attending?"
+                type="number"
+                value={state.attendingSeats}
+                onChange={(e) => setField("attendingSeats", e.target.value)}
+                inputProps={{ min: 0, max: state.validated?.reservedSeats ?? 0 }}
+                disabled={!state.validated}
+                fullWidth
+              />
 
-          <TextField
-            label="Message (optional)"
-            value={state.note}
-            onChange={(e) => setField("note", e.target.value)}
-            multiline
-            minRows={2}
-            fullWidth
-          />
+              <TextField
+                label="Message (optional)"
+                value={state.note}
+                onChange={(e) => setField("note", e.target.value)}
+                multiline
+                minRows={2}
+                fullWidth
+              />
+            </>
+          ) : null}
         </Stack>
       </DialogContent>
       <DialogActions sx={{ px: 3, pb: 2.2, display: "flex", justifyContent: "space-between" }}>
@@ -168,14 +237,26 @@ const RsvpDialog = ({ open, onClose, onViewDetails }) => {
           >
             View Details
           </Button>
-          <Button
-            onClick={handleSubmit}
-            variant="contained"
-            disabled={!state.validated || state.submitting}
-            sx={{ backgroundColor: "#9C6B2F", "&:hover": { backgroundColor: "#7A5630" } }}
-          >
-            {state.submitting ? "Submitting..." : "Confirm RSVP"}
-          </Button>
+          {isChecked && !isAlreadyConfirmed ? (
+            <>
+              <Button
+                onClick={handleNotAttending}
+                variant="outlined"
+                disabled={state.submitting}
+                sx={{ borderColor: "#9C6B2F", color: "#7A5630", "&:hover": { borderColor: "#7A5630" } }}
+              >
+                {state.submitting ? "Submitting..." : "Not Attending"}
+              </Button>
+              <Button
+                onClick={handleSubmit}
+                variant="contained"
+                disabled={!state.validated || state.submitting}
+                sx={{ backgroundColor: "#9C6B2F", "&:hover": { backgroundColor: "#7A5630" } }}
+              >
+                {state.submitting ? "Submitting..." : "Confirm RSVP"}
+              </Button>
+            </>
+          ) : null}
         </Box>
       </DialogActions>
     </Dialog>
@@ -183,4 +264,3 @@ const RsvpDialog = ({ open, onClose, onViewDetails }) => {
 };
 
 export default RsvpDialog;
-
