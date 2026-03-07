@@ -195,7 +195,7 @@ const RsvpDialog = ({ open, onClose, onViewDetails }) => {
               <Typography sx={{ color: "#8B7355" }}>Attendance status: {state.validated.attendanceStatus || "Pending"}</Typography>
               {isAlreadyConfirmed ? (
                 <Alert severity="info" sx={{ mt: 1.2 }}>
-                  This RSVP is already confirmed. Submission fields are disabled.
+                  This RSVP is already confirmed. Submission fields are disabled. For modifications, Contact Marc(09190758201) or Anna(09179032870)
                 </Alert>
               ) : null}
             </Box>

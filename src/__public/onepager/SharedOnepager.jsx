@@ -21,7 +21,7 @@ const weddingStatic = {
       title: "Welcome",
       preview: "A graceful beginning to our celebration.",
       icon: SpaOutlinedIcon,
-      quote: "With joy in our hearts, we invite you to witness our forever.",
+      quote: "Here's a sneak peak of Marc & Anna through out almost 9 years of being in love. Together with their closest friends and families. 🩷",
       hero: "An Evening of Vows, Elegance, and Celebration",
       venue: "Garden Estate, Tuscany",
       details: [
@@ -39,7 +39,7 @@ const weddingStatic = {
       ],
     },
     schedule: {
-      title: "Schedule",
+      title: "Schedule of Events",
       preview: "A curated flow from vows to afterglow.",
       icon: EventOutlinedIcon,
       hero: "Timeline of the Celebration",
@@ -142,7 +142,7 @@ const weddingStatic = {
       },
     },
     photos: {
-      title: "Photos",
+      title: "Prenup Photos",
       preview: "Portraits, memories, and after-wedding gallery.",
       icon: PhotoCameraOutlinedIcon,
       hero: "Moments We Will Treasure",
@@ -612,136 +612,194 @@ const TravelDetailPage = ({ page, onBackToCards }) => (
   </DetailShell>
 );
 
-const DetailsDetailPage = ({ page, onBackToCards }) => (
-  <DetailShell page={page} onBackToCards={onBackToCards}>
-    <Box sx={{ mb: 2.5 }}>
-      <Typography sx={{ color: "#5D4E3C", fontSize: "1.55rem", mb: 1 }}>Loving Parents</Typography>
-      <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" }, gap: 2 }}>
-        <Box sx={{ p: 2.2, borderRadius: "10px", border: "1px solid rgba(201,160,117,0.34)", background: "linear-gradient(145deg, rgba(255,255,255,0.95) 0%, rgba(250,245,238,0.95) 100%)" }}>
-          <Typography sx={{ color: "#9C6B2F", letterSpacing: 1.2, textTransform: "uppercase", fontSize: "0.78rem", mb: 0.8 }}>Bride's Parents</Typography>
-          <Typography sx={{ color: "#5D4E3C", fontSize: "1.04rem", lineHeight: 1.5 }}>{page.parents?.[2]}</Typography>
-          <Typography sx={{ color: "#5D4E3C", fontSize: "1.04rem", lineHeight: 1.5 }}>{page.parents?.[3]}</Typography>
+const DetailsDetailPage = ({ page, onBackToCards }) => {
+  const [activeSection, setActiveSection] = useState("parents");
+  const sections = [
+    { id: "parents", label: "Parents" },
+    { id: "principal", label: "Principal Sponsors" },
+    { id: "entourage", label: "Entourage" },
+    { id: "secondary", label: "Secondary Sponsors" },
+    { id: "roles", label: "Wedding Roles" },
+    { id: "guide", label: "Guest Guide" },
+  ];
+  const panelSx = {
+    p: { xs: 2.1, md: 2.3 },
+    borderRadius: "12px",
+    border: "1px solid rgba(201,160,117,0.28)",
+    backgroundColor: "rgba(255,255,255,0.94)",
+  };
+
+  return (
+    <DetailShell page={page} onBackToCards={onBackToCards}>
+      <Box
+        sx={{
+          position: "sticky",
+          top: { xs: 8, md: 14 },
+          zIndex: 5,
+          mb: 2.1,
+          borderRadius: "14px",
+          border: "1px solid rgba(201,160,117,0.26)",
+          background: "rgba(255,255,255,0.94)",
+          backdropFilter: "blur(8px)",
+          p: 1,
+        }}
+      >
+        <Box sx={{ display: "flex", gap: 0.8, overflowX: "auto", pb: 0.2 }}>
+          {sections.map((section) => (
+            <Button
+              key={section.id}
+              onClick={() => setActiveSection(section.id)}
+              variant={activeSection === section.id ? "contained" : "outlined"}
+              sx={{
+                flex: "0 0 auto",
+                borderRadius: "999px",
+                px: 1.45,
+                py: 0.55,
+                borderColor: "rgba(156,107,47,0.35)",
+                color: activeSection === section.id ? "#fff" : "#7A5630",
+                backgroundColor: activeSection === section.id ? "#9C6B2F" : "transparent",
+                "&:hover": {
+                  borderColor: "#9C6B2F",
+                  backgroundColor: activeSection === section.id ? "#8A5C2A" : "rgba(201,160,117,0.12)",
+                },
+              }}
+            >
+              {section.label}
+            </Button>
+          ))}
         </Box>
-        <Box sx={{ p: 2.2, borderRadius: "10px", border: "1px solid rgba(201,160,117,0.34)", background: "linear-gradient(145deg, rgba(255,255,255,0.95) 0%, rgba(250,245,238,0.95) 100%)" }}>
-          <Typography sx={{ color: "#9C6B2F", letterSpacing: 1.2, textTransform: "uppercase", fontSize: "0.78rem", mb: 0.8 }}>Groom's Parents</Typography>
-          <Typography sx={{ color: "#5D4E3C", fontSize: "1.04rem", lineHeight: 1.5 }}>{page.parents?.[0]}</Typography>
-          <Typography sx={{ color: "#5D4E3C", fontSize: "1.04rem", lineHeight: 1.5 }}>{page.parents?.[1]}</Typography>
+      </Box>
+
+      {activeSection === "parents" && (
+        <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" }, gap: 2 }}>
+          <Box sx={{ ...panelSx, background: "linear-gradient(145deg, rgba(255,255,255,0.95) 0%, rgba(250,245,238,0.95) 100%)" }}>
+            <Typography sx={{ color: "#9C6B2F", letterSpacing: 1.2, textTransform: "uppercase", fontSize: "0.78rem", mb: 0.8 }}>Bride's Parents</Typography>
+            <Typography sx={{ color: "#5D4E3C", fontSize: "1.06rem", lineHeight: 1.52 }}>{page.parents?.[2]}</Typography>
+            <Typography sx={{ color: "#5D4E3C", fontSize: "1.06rem", lineHeight: 1.52 }}>{page.parents?.[3]}</Typography>
+          </Box>
+          <Box sx={{ ...panelSx, background: "linear-gradient(145deg, rgba(255,255,255,0.95) 0%, rgba(250,245,238,0.95) 100%)" }}>
+            <Typography sx={{ color: "#9C6B2F", letterSpacing: 1.2, textTransform: "uppercase", fontSize: "0.78rem", mb: 0.8 }}>Groom's Parents</Typography>
+            <Typography sx={{ color: "#5D4E3C", fontSize: "1.06rem", lineHeight: 1.52 }}>{page.parents?.[0]}</Typography>
+            <Typography sx={{ color: "#5D4E3C", fontSize: "1.06rem", lineHeight: 1.52 }}>{page.parents?.[1]}</Typography>
+          </Box>
         </Box>
-      </Box>
-    </Box>
+      )}
 
-    <Box sx={{ p: 2.2, borderRadius: "10px", border: "1px solid rgba(201,160,117,0.28)", backgroundColor: "rgba(255,255,255,0.92)", mb: 2.5 }}>
-      <Typography sx={{ color: "#5D4E3C", fontSize: "1.45rem", mb: 0.9 }}>Principal Sponsors</Typography>
-      <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" }, gap: 0.5 }}>
-        {page.principalSponsors?.map((name) => (
-          <Typography key={name} sx={{ color: "#8B7355", fontSize: "0.98rem", py: 0.2 }}>{name}</Typography>
-        ))}
-      </Box>
-    </Box>
+      {activeSection === "principal" && (
+        <Box sx={panelSx}>
+          <Typography sx={{ color: "#5D4E3C", fontSize: "1.45rem", mb: 1 }}>Principal Sponsors</Typography>
+          <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" }, gap: 0.75 }}>
+            {page.principalSponsors?.map((name) => (
+              <Typography key={name} sx={{ color: "#8B7355", fontSize: "1rem", py: 0.25 }}>{name}</Typography>
+            ))}
+          </Box>
+        </Box>
+      )}
 
-    <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 1fr 1fr" }, gap: 2, mb: 2.5 }}>
-      <Box sx={{ p: 2, borderRadius: "10px", border: "1px solid rgba(201,160,117,0.28)", backgroundColor: "rgba(255,255,255,0.92)" }}>
-        <Typography sx={{ color: "#5D4E3C", fontSize: "1.2rem", mb: 0.4 }}>Best Girl</Typography>
-        <Typography sx={{ color: "#8B7355" }}>{page.entourage?.bestGirl}</Typography>
-      </Box>
-      <Box sx={{ p: 2, borderRadius: "10px", border: "1px solid rgba(201,160,117,0.28)", backgroundColor: "rgba(255,255,255,0.92)" }}>
-        <Typography sx={{ color: "#5D4E3C", fontSize: "1.2rem", mb: 0.4 }}>Matron of Honor</Typography>
-        <Typography sx={{ color: "#8B7355" }}>{page.entourage?.matronOfHonor}</Typography>
-      </Box>
-      <Box sx={{ p: 2, borderRadius: "10px", border: "1px solid rgba(201,160,117,0.28)", backgroundColor: "rgba(255,255,255,0.92)" }}>
-        <Typography sx={{ color: "#5D4E3C", fontSize: "1.2rem", mb: 0.4 }}>Best Man</Typography>
-        <Typography sx={{ color: "#8B7355" }}>{page.entourage?.bestMan}</Typography>
-      </Box>
-    </Box>
+      {activeSection === "entourage" && (
+        <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 1fr 1fr" }, gap: 2 }}>
+          <Box sx={panelSx}>
+            <Typography sx={{ color: "#5D4E3C", fontSize: "1.2rem", mb: 0.45 }}>Best Girl</Typography>
+            <Typography sx={{ color: "#8B7355", fontSize: "1.02rem" }}>{page.entourage?.bestGirl}</Typography>
+          </Box>
+          <Box sx={panelSx}>
+            <Typography sx={{ color: "#5D4E3C", fontSize: "1.2rem", mb: 0.45 }}>Matron of Honor</Typography>
+            <Typography sx={{ color: "#8B7355", fontSize: "1.02rem" }}>{page.entourage?.matronOfHonor}</Typography>
+          </Box>
+          <Box sx={panelSx}>
+            <Typography sx={{ color: "#5D4E3C", fontSize: "1.2rem", mb: 0.45 }}>Best Man</Typography>
+            <Typography sx={{ color: "#8B7355", fontSize: "1.02rem" }}>{page.entourage?.bestMan}</Typography>
+          </Box>
+        </Box>
+      )}
 
-    <Box sx={{ mb: 2.5 }}>
-      <Typography sx={{ color: "#5D4E3C", fontSize: "1.45rem", mb: 1 }}>Secondary Sponsors</Typography>
-      <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 1fr 1fr" }, gap: 1.5 }}>
-        {Object.entries(page.secondarySponsors || {}).map(([group, names]) => (
-          <Box
-            key={group}
-            sx={{
-              p: 1.8,
-              borderRadius: "10px",
-              border: "1px solid rgba(201,160,117,0.3)",
-              background: "linear-gradient(160deg, rgba(255,255,255,0.95) 0%, rgba(248,241,232,0.94) 100%)",
-              boxShadow: "0 6px 18px rgba(156,107,47,0.08)",
-              position: "relative",
-              overflow: "hidden",
-            }}
-          >
-            <Box sx={{ position: "absolute", top: -24, right: -24, width: 70, height: 70, borderRadius: "50%", backgroundColor: "rgba(201,160,117,0.16)" }} />
-            <Typography sx={{ color: "#5D4E3C", fontSize: "1.02rem", mb: 0.55, position: "relative" }}>{group}</Typography>
-            {names.map((n) => (
-              <Typography key={n} sx={{ color: "#8B7355", fontSize: "0.94rem", lineHeight: 1.45, position: "relative" }}>
-                {n}
+      {activeSection === "secondary" && (
+        <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" }, gap: 1.4 }}>
+          {Object.entries(page.secondarySponsors || {}).map(([group, names]) => (
+            <Box
+              key={group}
+              sx={{
+                ...panelSx,
+                background: "linear-gradient(160deg, rgba(255,255,255,0.95) 0%, rgba(248,241,232,0.94) 100%)",
+                boxShadow: "0 6px 18px rgba(156,107,47,0.08)",
+              }}
+            >
+              <Typography sx={{ color: "#5D4E3C", fontSize: "1.05rem", mb: 0.65 }}>{group}</Typography>
+              {names.map((n) => (
+                <Typography key={n} sx={{ color: "#8B7355", fontSize: "0.98rem", lineHeight: 1.45 }}>
+                  {n}
+                </Typography>
+              ))}
+            </Box>
+          ))}
+        </Box>
+      )}
+
+      {activeSection === "roles" && (
+        <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 1fr 1fr" }, gap: 2 }}>
+          <Box sx={panelSx}>
+            <Typography sx={{ color: "#5D4E3C", fontSize: "1.2rem", mb: 0.4 }}>Ring Bearer</Typography>
+            {page.ringBearers?.map((n) => <Typography key={n} sx={{ color: "#8B7355", fontSize: "0.98rem" }}>{n}</Typography>)}
+          </Box>
+          <Box sx={panelSx}>
+            <Typography sx={{ color: "#5D4E3C", fontSize: "1.2rem", mb: 0.4 }}>Bridesmaid</Typography>
+            {page.bridesmaids?.map((n) => <Typography key={n} sx={{ color: "#8B7355", fontSize: "0.98rem" }}>{n}</Typography>)}
+          </Box>
+          <Box sx={panelSx}>
+            <Typography sx={{ color: "#5D4E3C", fontSize: "1.2rem", mb: 0.4 }}>Groomsmen</Typography>
+            {page.groomsmen?.map((n) => <Typography key={n} sx={{ color: "#8B7355", fontSize: "0.98rem" }}>{n}</Typography>)}
+          </Box>
+        </Box>
+      )}
+
+      {activeSection === "guide" && (
+        <Box sx={panelSx}>
+          <Typography sx={{ color: "#5D4E3C", fontSize: "1.35rem", mb: 1.1 }}>Guest Guide</Typography>
+
+          <Box sx={{ mb: 2.2 }}>
+            <Typography sx={{ color: "#5D4E3C", fontSize: "1.08rem", mb: 0.65, letterSpacing: 0.6, textTransform: "uppercase" }}>Dress Code</Typography>
+            {page.guestGuide?.dressCode?.map((line, idx) => (
+              <Typography key={idx} sx={{ color: "#8B7355", fontSize: "1rem", lineHeight: 1.55, mb: 0.75 }}>{line}</Typography>
+            ))}
+          </Box>
+
+          <Box sx={{ mb: 2.2 }}>
+            <Typography sx={{ color: "#5D4E3C", fontSize: "1.08rem", mb: 0.65, letterSpacing: 0.6, textTransform: "uppercase" }}>Color Palette - Guests</Typography>
+            <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
+              {page.guestGuide?.paletteGuests?.map((hex) => (
+                <Box key={hex} sx={{ display: "flex", alignItems: "center", gap: 0.5, pr: 1 }}>
+                  <Box sx={{ width: 20, height: 20, borderRadius: "50%", backgroundColor: hex, border: "1px solid rgba(0,0,0,0.15)" }} />
+                  <Typography sx={{ color: "#8B7355", fontSize: "0.86rem" }}>{hex}</Typography>
+                </Box>
+              ))}
+            </Box>
+          </Box>
+
+          <Box sx={{ mb: 2.2 }}>
+            <Typography sx={{ color: "#5D4E3C", fontSize: "1.08rem", mb: 0.65, letterSpacing: 0.6, textTransform: "uppercase" }}>Color Palette - Principal Sponsors</Typography>
+            <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
+              {page.guestGuide?.paletteSponsors?.map((hex) => (
+                <Box key={hex} sx={{ display: "flex", alignItems: "center", gap: 0.5, pr: 1 }}>
+                  <Box sx={{ width: 20, height: 20, borderRadius: "50%", backgroundColor: hex, border: "1px solid rgba(0,0,0,0.15)" }} />
+                  <Typography sx={{ color: "#8B7355", fontSize: "0.86rem" }}>{hex}</Typography>
+                </Box>
+              ))}
+            </Box>
+          </Box>
+
+          <Box>
+            <Typography sx={{ color: "#5D4E3C", fontSize: "1.08rem", mb: 0.65, letterSpacing: 0.6, textTransform: "uppercase" }}>Important Notes</Typography>
+            {page.guestGuide?.notes?.map((note, idx) => (
+              <Typography key={idx} sx={{ color: "#8B7355", fontSize: "0.98rem", lineHeight: 1.6, mb: 1.05 }}>
+                {note}
               </Typography>
             ))}
           </Box>
-        ))}
-      </Box>
-    </Box>
-
-    <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 1fr 1fr" }, gap: 2, mb: 2.5 }}>
-      <Box sx={{ p: 2, borderRadius: "10px", border: "1px solid rgba(201,160,117,0.28)", backgroundColor: "rgba(255,255,255,0.92)" }}>
-        <Typography sx={{ color: "#5D4E3C", fontSize: "1.2rem", mb: 0.4 }}>Ring Bearer</Typography>
-        {page.ringBearers?.map((n) => <Typography key={n} sx={{ color: "#8B7355", fontSize: "0.95rem" }}>{n}</Typography>)}
-      </Box>
-      <Box sx={{ p: 2, borderRadius: "10px", border: "1px solid rgba(201,160,117,0.28)", backgroundColor: "rgba(255,255,255,0.92)" }}>
-        <Typography sx={{ color: "#5D4E3C", fontSize: "1.2rem", mb: 0.4 }}>Bridesmaid</Typography>
-        {page.bridesmaids?.map((n) => <Typography key={n} sx={{ color: "#8B7355", fontSize: "0.95rem" }}>{n}</Typography>)}
-      </Box>
-      <Box sx={{ p: 2, borderRadius: "10px", border: "1px solid rgba(201,160,117,0.28)", backgroundColor: "rgba(255,255,255,0.92)" }}>
-        <Typography sx={{ color: "#5D4E3C", fontSize: "1.2rem", mb: 0.4 }}>Groomsmen</Typography>
-        {page.groomsmen?.map((n) => <Typography key={n} sx={{ color: "#8B7355", fontSize: "0.95rem" }}>{n}</Typography>)}
-      </Box>
-    </Box>
-
-    <Box sx={{ p: 2.2, borderRadius: "10px", border: "1px solid rgba(201,160,117,0.28)", backgroundColor: "rgba(255,255,255,0.92)" }}>
-      <Typography sx={{ color: "#5D4E3C", fontSize: "1.4rem", mb: 0.8 }}>Guest Guide</Typography>
-
-      <Box sx={{ mb: 2.2 }}>
-        <Typography sx={{ color: "#5D4E3C", fontSize: "1.08rem", mb: 0.65, letterSpacing: 0.6, textTransform: "uppercase" }}>Dress Code</Typography>
-        {page.guestGuide?.dressCode?.map((line, idx) => (
-          <Typography key={idx} sx={{ color: "#8B7355", fontSize: "1rem", lineHeight: 1.55, mb: 0.75 }}>{line}</Typography>
-        ))}
-      </Box>
-
-      <Box sx={{ mb: 2.2 }}>
-        <Typography sx={{ color: "#5D4E3C", fontSize: "1.08rem", mb: 0.65, letterSpacing: 0.6, textTransform: "uppercase" }}>Color Palette - Guests</Typography>
-        <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
-          {page.guestGuide?.paletteGuests?.map((hex) => (
-            <Box key={hex} sx={{ display: "flex", alignItems: "center", gap: 0.5, pr: 1 }}>
-              <Box sx={{ width: 20, height: 20, borderRadius: "50%", backgroundColor: hex, border: "1px solid rgba(0,0,0,0.15)" }} />
-              <Typography sx={{ color: "#8B7355", fontSize: "0.86rem" }}>{hex}</Typography>
-            </Box>
-          ))}
         </Box>
-      </Box>
-
-      <Box sx={{ mb: 2.2 }}>
-        <Typography sx={{ color: "#5D4E3C", fontSize: "1.08rem", mb: 0.65, letterSpacing: 0.6, textTransform: "uppercase" }}>Color Palette - Principal Sponsors</Typography>
-        <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
-          {page.guestGuide?.paletteSponsors?.map((hex) => (
-            <Box key={hex} sx={{ display: "flex", alignItems: "center", gap: 0.5, pr: 1 }}>
-              <Box sx={{ width: 20, height: 20, borderRadius: "50%", backgroundColor: hex, border: "1px solid rgba(0,0,0,0.15)" }} />
-              <Typography sx={{ color: "#8B7355", fontSize: "0.86rem" }}>{hex}</Typography>
-            </Box>
-          ))}
-        </Box>
-      </Box>
-
-      <Box sx={{ mb: 0.4 }}>
-        <Typography sx={{ color: "#5D4E3C", fontSize: "1.08rem", mb: 0.65, letterSpacing: 0.6, textTransform: "uppercase" }}>Important Notes</Typography>
-        {page.guestGuide?.notes?.map((note, idx) => (
-          <Typography key={idx} sx={{ color: "#8B7355", fontSize: "0.96rem", lineHeight: 1.6, mb: 1.05 }}>
-            {note}
-          </Typography>
-        ))}
-      </Box>
-    </Box>
-  </DetailShell>
-);
+      )}
+    </DetailShell>
+  );
+};
 
 const PhotosDetailPage = ({ page, onBackToCards }) => {
   const isDesktop = useMediaQuery((theme) => theme.breakpoints.up("md"));
@@ -996,6 +1054,7 @@ export const SharedOnepager = ({ onBackToInvitation, variant = "desktop" }) => {
       })),
     [pages],
   );
+  const isFourCardLayout = !isMobile && cards.length === 4;
   const useScatteredLayout = !isMobile && cards.length === positions.length;
 
   useEffect(() => {
@@ -1118,11 +1177,16 @@ export const SharedOnepager = ({ onBackToInvitation, variant = "desktop" }) => {
             ) : (
               <Box
                 sx={{
-                  display: "flex",
-                  flexWrap: "wrap",
+                  display: isFourCardLayout ? "grid" : "flex",
+                  gridTemplateColumns: isFourCardLayout ? "repeat(2, minmax(0, 1fr))" : undefined,
+                  maxWidth: isFourCardLayout ? 900 : "100%",
+                  mx: "auto",
+                  flexWrap: isMobile ? "nowrap" : "wrap",
+                  flexDirection: isMobile ? "column" : "row",
                   justifyContent: "center",
+                  alignItems: "center",
                   alignContent: "center",
-                  gap: 1.5,
+                  gap: isFourCardLayout ? 2.1 : 1.5,
                   py: 1,
                   width: "100%",
                 }}
@@ -1134,12 +1198,13 @@ export const SharedOnepager = ({ onBackToInvitation, variant = "desktop" }) => {
                     isMobile={isMobile}
                     isTablet={isTablet}
                     styleSx={{
-                      minHeight: isMobile ? 190 : 220,
-                      p: isMobile ? 2 : 2.4,
-                      width: isMobile ? "calc(50% - 12px)" : "calc(33.333% - 12px)",
+                      minHeight: isMobile ? 168 : 220,
+                      p: isMobile ? 1.8 : isFourCardLayout ? 2.8 : 2.4,
+                      width: isMobile ? "min(100%, 420px)" : isFourCardLayout ? "100%" : "calc(33.333% - 12px)",
                       minWidth: isMobile ? 148 : isTablet ? 190 : 220,
-                      maxWidth: isMobile ? 230 : 300,
-                      transform: `rotate(${idx % 2 === 0 ? -2 : 2}deg)`,
+                      maxWidth: isMobile ? 420 : isFourCardLayout ? 420 : 300,
+                      justifySelf: isFourCardLayout ? "center" : undefined,
+                      transform: isFourCardLayout ? `rotate(${idx % 2 === 0 ? -1.2 : 1.2}deg)` : `rotate(${idx % 2 === 0 ? -2 : 2}deg)`,
                     }}
                     onClick={() => openCardPage(card.id)}
                   />
@@ -1156,4 +1221,3 @@ export const SharedOnepager = ({ onBackToInvitation, variant = "desktop" }) => {
 };
 
 export default SharedOnepager;
-

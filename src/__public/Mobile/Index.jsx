@@ -74,7 +74,7 @@ const Invitation = ({ onRsvpClick }) => {
           <Typography sx={{ fontFamily: '"Cormorant Garamond", serif', fontSize: "2.55rem", color: "#9C6B2F", lineHeight: 1 }}>
             {c.names.second}
           </Typography>
-          <Typography sx={{ mt: 1.5, fontFamily: '"Cormorant Garamond", serif', color: "#A79C8E", fontSize: "0.95rem" }}>
+          <Typography sx={{ mt: 1.5, fontFamily: '"Cormorant Garamond", serif', color: "#7A5630", fontSize: "0.95rem" }}>
             {c.header}
           </Typography>
           <Typography sx={{ fontFamily: '"Cormorant Garamond", serif', color: "#7A5630", fontSize: "1rem" }}>
@@ -86,7 +86,7 @@ const Invitation = ({ onRsvpClick }) => {
           <Typography sx={{ fontFamily: '"Cormorant Garamond", serif', letterSpacing: 1.1, color: "#7A5630", fontSize: "1.08rem", mb: 0.3 }}>
             {c.date}
           </Typography>
-          <Typography sx={{ fontFamily: '"Cormorant Garamond", serif', color: "#A79C8E", fontSize: "0.98rem", mb: 1.6 }}>
+          <Typography sx={{ fontFamily: '"Cormorant Garamond", serif', color: "#7A5630", fontSize: "0.98rem", mb: 1.6 }}>
             {c.time}
           </Typography>
           <Box sx={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 0.7 }}>
