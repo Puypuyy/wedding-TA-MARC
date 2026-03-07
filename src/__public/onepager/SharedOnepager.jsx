@@ -48,6 +48,10 @@ const weddingStatic = {
         { time: "12:45 PM", event: "Lining up of entourage and sponsors", note: "" },
         { time: "1:00 PM", event: "Start of procession", note: "" },
         { time: "1:30 PM", event: "Start of ceremony", note: "" },
+        { time: "2:30 PM", event: "Photoshoot inside the church", note: "" },
+        { time: "3:00 PM", event: "Postnup of couple and entourage at church", note: "" },
+        { time: "4:00 PM", event: "Start of cocktail hour", note: "" },
+        { time: "5:00 PM", event: "Reception time", note: "Quick program and dinner." },
       ],
     },
     // travel: {
