@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from "react";
 import { Box, Button, Divider, Typography, useMediaQuery } from "@mui/material";
 import { motion } from "framer-motion";
 import SpaOutlinedIcon from "@mui/icons-material/SpaOutlined";
-import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import EventOutlinedIcon from "@mui/icons-material/EventOutlined";
 import ChurchOutlinedIcon from "@mui/icons-material/ChurchOutlined";
 import PhotoCameraOutlinedIcon from "@mui/icons-material/PhotoCameraOutlined";
@@ -15,7 +14,7 @@ const MotionBox = motion(Box);
 
 const weddingStatic = {
   couple: "Rendon ~ Nepomuceno Nuptial",
-  date: "Saturday, April 24, 2026",
+  date: "Saturday, April 25, 2026",
   backToInvitation: "Back to Invitation",
   pages: {
     welcome: {
@@ -39,33 +38,16 @@ const weddingStatic = {
         { caption: "Forever Begins", image: "/images/welcome-photos/MCP-2.jpg", tone: "linear-gradient(135deg, #d9c9b9 0%, #b9a999 100%)" },
       ],
     },
-    story: {
-      title: "Our Story",
-      preview: "From first hello to forever yes.",
-      icon: FavoriteBorderIcon,
-      hero: "The Story Behind the Promise",
-      details: [
-        "A friendship that became devotion.",
-        "A thousand ordinary days made extraordinary together.",
-        "A promise made in gratitude, faith, and love.",
-      ],
-      timeline: [
-        { year: "2019", label: "The First Meeting", note: "A quiet beginning that changed everything." },
-        { year: "2022", label: "The Proposal", note: "A heartfelt yes and a future chosen together." },
-        { year: "2026", label: "The Wedding", note: "A celebration shared with the people we cherish." },
-      ],
-    },
     schedule: {
       title: "Schedule",
       preview: "A curated flow from vows to afterglow.",
       icon: EventOutlinedIcon,
       hero: "Timeline of the Celebration",
       items: [
-        { time: "1:30 PM", event: "Guest Arrival", note: "Welcome drinks and foyer reception." },
-        { time: "2:00 PM", event: "Wedding Ceremony", note: "Sacred vows and ring exchange." },
-        { time: "4:30 PM", event: "Cocktail Hour", note: "Music, portraits, and signatures." },
-        { time: "6:00 PM", event: "Grand Reception", note: "Dinner service and formal program." },
-        { time: "8:30 PM", event: "First Dance & Toast", note: "An intimate moment with loved ones." },
+        { time: "12:30 PM", event: "Guests arrival at church", note: "" },
+        { time: "12:45 PM", event: "Lining up of entourage and sponsors", note: "" },
+        { time: "1:00 PM", event: "Start of procession", note: "" },
+        { time: "1:30 PM", event: "Start of ceremony", note: "" },
       ],
     },
     // travel: {
@@ -245,6 +227,69 @@ const uploadedPhotos = Object.entries(
   })
   .sort((a, b) => a.title.localeCompare(b.title, undefined, { numeric: true, sensitivity: "base" }));
 
+const uploadedWelcomePhotoGroups = (() => {
+  const byFolder = new Map();
+  const entries = Object.entries(
+    import.meta.glob("../../../public/images/welcome-photos/**/*.{jpg,jpeg,png,webp,avif,JPG,JPEG,PNG,WEBP,AVIF}", {
+      eager: true,
+      import: "default",
+    }),
+  );
+
+  entries.forEach(([filePath, assetUrl]) => {
+    const normalizedPath = filePath.replace(/\\/g, "/");
+    const marker = "public/images/welcome-photos/";
+    const markerIndex = normalizedPath.indexOf(marker);
+    if (markerIndex < 0) return;
+
+    const relativePath = normalizedPath.slice(markerIndex + marker.length);
+    const pathParts = relativePath.split("/").filter(Boolean);
+    if (pathParts.length < 2) return;
+
+    const folderName = pathParts[0];
+    const fileName = pathParts[pathParts.length - 1];
+    const photoTitle = fileName.replace(/\.[^/.]+$/, "").replace(/[-_]+/g, " ").trim() || "Photo";
+    if (!byFolder.has(folderName)) {
+      byFolder.set(folderName, []);
+    }
+
+    byFolder.get(folderName).push({
+      title: photoTitle,
+      image: assetUrl,
+      tone: "linear-gradient(135deg, #c9b8a8 0%, #a89080 100%)",
+    });
+  });
+
+  const sortedFolders = [...byFolder.entries()]
+    .map(([folderName, photos]) => {
+      const sortedPhotos = photos.sort((a, b) => a.title.localeCompare(b.title, undefined, { numeric: true, sensitivity: "base" }));
+      return {
+        folderName,
+        caption: folderName,
+        tone: "linear-gradient(135deg, #c9b8a8 0%, #a89080 100%)",
+        coverImage: sortedPhotos[0]?.image || null,
+        photos: sortedPhotos,
+      };
+    })
+    .sort((a, b) => {
+      const aIsGettingToKnow = a.folderName.trim().toLowerCase() === "getting to know";
+      const bIsGettingToKnow = b.folderName.trim().toLowerCase() === "getting to know";
+      if (aIsGettingToKnow && !bIsGettingToKnow) return -1;
+      if (!aIsGettingToKnow && bIsGettingToKnow) return 1;
+
+      const aYear = Number.parseInt(a.folderName, 10);
+      const bYear = Number.parseInt(b.folderName, 10);
+      const aIsYear = Number.isInteger(aYear) && String(aYear) === a.folderName;
+      const bIsYear = Number.isInteger(bYear) && String(bYear) === b.folderName;
+      if (aIsYear && bIsYear) return aYear - bYear;
+      if (aIsYear) return -1;
+      if (bIsYear) return 1;
+      return a.folderName.localeCompare(b.folderName, undefined, { numeric: true, sensitivity: "base" });
+    });
+
+  return sortedFolders;
+})();
+
 const resolvePublicImage = (path) => {
   if (!path) return null;
   return `${import.meta.env.BASE_URL}${path.replace(/^\/+/, "")}`;
@@ -268,22 +313,42 @@ const PageCard = ({ page, isMobile, isTablet, styleSx, onClick }) => {
 };
 
 const WelcomeDetailPage = ({ page, onBackToCards }) => {
-  const [activePhoto, setActivePhoto] = useState(null);
-  const photos = page.gallery || [];
-  const desktopPhotoLayout = [
-    { left: "3%", top: "2%", rotate: "-4deg" },
-    { left: "33%", top: "0%", rotate: "3deg" },
-    { right: "6%", top: "5%", rotate: "-2deg" },
-    { left: "10%", top: "53%", rotate: "5deg" },
-    { right: "18%", top: "57%", rotate: "-3deg" },
-    { left: "41%", top: "68%", rotate: "2deg" },
+  const [activeFolder, setActiveFolder] = useState(null);
+  const [activePhoto, setActivePhoto] = useState(0);
+  const desktopFolderLayout = [
+    { left: "2%", top: "2%", rotate: "-6deg", zIndex: 5 },
+    { left: "22%", top: "0%", rotate: "4deg", zIndex: 6 },
+    { left: "42%", top: "4%", rotate: "-3deg", zIndex: 4 },
+    { right: "14%", top: "2%", rotate: "5deg", zIndex: 7 },
+    { right: "1%", top: "8%", rotate: "-4deg", zIndex: 5 },
+    { left: "8%", top: "43%", rotate: "5deg", zIndex: 7 },
+    { left: "30%", top: "40%", rotate: "-2deg", zIndex: 5 },
+    { left: "52%", top: "47%", rotate: "3deg", zIndex: 6 },
+    { right: "18%", top: "43%", rotate: "-5deg", zIndex: 4 },
+    { right: "2%", top: "50%", rotate: "4deg", zIndex: 6 },
   ];
+  const folderCards = useMemo(() => {
+    if (uploadedWelcomePhotoGroups.length) return uploadedWelcomePhotoGroups;
+    return (page.gallery || []).map((photo) => ({
+      folderName: photo.caption,
+      caption: photo.caption,
+      tone: photo.tone,
+      coverImage: photo.image ? resolvePublicImage(photo.image) : null,
+      photos: [
+        {
+          title: photo.caption,
+          image: photo.image ? resolvePublicImage(photo.image) : null,
+          tone: photo.tone,
+        },
+      ],
+    }));
+  }, [page.gallery]);
+  const activeFolderPhotos = activeFolder === null ? [] : folderCards[activeFolder]?.photos || [];
+  const canUseDesktopScatter = folderCards.length > 0 && folderCards.length <= desktopFolderLayout.length;
 
   const movePhoto = (direction) => {
-    if (activePhoto === null) return;
-    const len = photos.length;
-    const next = (activePhoto + direction + len) % len;
-    setActivePhoto(next);
+    if (!activeFolderPhotos.length) return;
+    setActivePhoto((prev) => (prev + direction + activeFolderPhotos.length) % activeFolderPhotos.length);
   };
 
   return (
@@ -311,11 +376,14 @@ const WelcomeDetailPage = ({ page, onBackToCards }) => {
           </Box>
 
           <Box sx={{ display: { xs: "grid", md: "none" }, gridTemplateColumns: "1fr 1fr", gap: 1.5 }}>
-            {photos.map((photo, idx) => (
+            {folderCards.map((folder, idx) => (
               <MotionBox
-                key={photo.caption}
+                key={folder.folderName}
                 whileHover={{ y: -4, scale: 1.02 }}
-                onClick={() => setActivePhoto(idx)}
+                onClick={() => {
+                  setActiveFolder(idx);
+                  setActivePhoto(0);
+                }}
                 sx={{
                   ...paperSx,
                   p: "10px 10px 30px",
@@ -327,55 +395,96 @@ const WelcomeDetailPage = ({ page, onBackToCards }) => {
                   sx={{
                     aspectRatio: "1 / 1",
                     borderRadius: "2px",
-                    background: photo.tone,
-                    backgroundImage: photo.image ? `url("${resolvePublicImage(photo.image)}")` : "none",
+                    background: folder.tone,
+                    backgroundImage: folder.coverImage ? `url("${folder.coverImage}")` : "none",
                     backgroundSize: "cover",
                     backgroundPosition: "center",
                     backgroundRepeat: "no-repeat",
                   }}
                 />
-                <Typography sx={{ textAlign: "center", mt: 1, color: "#6F4E37", fontSize: "0.95rem" }}>{photo.caption}</Typography>
+                <Typography sx={{ textAlign: "center", mt: 1, color: "#6F4E37", fontSize: "0.95rem" }}>{folder.caption}</Typography>
+                <Typography sx={{ textAlign: "center", color: "#8B7355", fontSize: "0.8rem" }}>{folder.photos.length} photos</Typography>
               </MotionBox>
             ))}
           </Box>
 
-          <Box sx={{ display: { xs: "none", md: "block" }, position: "relative", height: "740px" }}>
-            {photos.map((photo, idx) => (
-              <MotionBox
-                key={photo.caption}
-                whileHover={{ y: -8, scale: 1.04, rotate: "0deg" }}
-                onClick={() => setActivePhoto(idx)}
-                sx={{
-                  ...paperSx,
-                  position: "absolute",
-                  width: "220px",
-                  p: "12px 12px 36px",
-                  cursor: "pointer",
-                  transform: `rotate(${desktopPhotoLayout[idx].rotate})`,
-                  ...desktopPhotoLayout[idx],
-                }}
-              >
-                <Box
-                  sx={{
-                    aspectRatio: "1 / 1",
-                    borderRadius: "2px",
-                    background: photo.tone,
-                    backgroundImage: photo.image ? `url("${resolvePublicImage(photo.image)}")` : "none",
-                    backgroundSize: "cover",
-                    backgroundPosition: "center",
-                    backgroundRepeat: "no-repeat",
+          {canUseDesktopScatter ? (
+            <Box sx={{ display: { xs: "none", md: "block" }, position: "relative", height: "760px" }}>
+              {folderCards.map((folder, idx) => (
+                <MotionBox
+                  key={folder.folderName}
+                  whileHover={{ y: -8, scale: 1.04, rotate: "0deg" }}
+                  onClick={() => {
+                    setActiveFolder(idx);
+                    setActivePhoto(0);
                   }}
-                />
-                <Typography sx={{ textAlign: "center", mt: 1.2, color: "#6F4E37", fontSize: "1.1rem" }}>{photo.caption}</Typography>
-              </MotionBox>
-            ))}
-          </Box>
+                  sx={{
+                    ...paperSx,
+                    position: "absolute",
+                    width: "190px",
+                    p: "12px 12px 34px",
+                    cursor: "pointer",
+                    transform: `rotate(${desktopFolderLayout[idx].rotate})`,
+                    zIndex: desktopFolderLayout[idx].zIndex,
+                    ...desktopFolderLayout[idx],
+                  }}
+                >
+                  <Box
+                    sx={{
+                      aspectRatio: "1 / 1",
+                      borderRadius: "2px",
+                      background: folder.tone,
+                      backgroundImage: folder.coverImage ? `url("${folder.coverImage}")` : "none",
+                      backgroundSize: "cover",
+                      backgroundPosition: "center",
+                      backgroundRepeat: "no-repeat",
+                    }}
+                  />
+                  <Typography sx={{ textAlign: "center", mt: 1, color: "#6F4E37", fontSize: "1rem" }}>{folder.caption}</Typography>
+                  <Typography sx={{ textAlign: "center", color: "#8B7355", fontSize: "0.8rem" }}>{folder.photos.length} photos</Typography>
+                </MotionBox>
+              ))}
+            </Box>
+          ) : (
+            <Box sx={{ display: { xs: "none", md: "grid" }, gridTemplateColumns: "repeat(4, minmax(0, 1fr))", gap: 2 }}>
+              {folderCards.map((folder, idx) => (
+                <MotionBox
+                  key={folder.folderName}
+                  whileHover={{ y: -6, scale: 1.02 }}
+                  onClick={() => {
+                    setActiveFolder(idx);
+                    setActivePhoto(0);
+                  }}
+                  sx={{
+                    ...paperSx,
+                    p: "10px 10px 30px",
+                    cursor: "pointer",
+                    transform: `rotate(${(idx % 4) - 1.5}deg)`,
+                  }}
+                >
+                  <Box
+                    sx={{
+                      aspectRatio: "1 / 1",
+                      borderRadius: "2px",
+                      background: folder.tone,
+                      backgroundImage: folder.coverImage ? `url("${folder.coverImage}")` : "none",
+                      backgroundSize: "cover",
+                      backgroundPosition: "center",
+                      backgroundRepeat: "no-repeat",
+                    }}
+                  />
+                  <Typography sx={{ textAlign: "center", mt: 1, color: "#6F4E37", fontSize: "1.05rem" }}>{folder.caption}</Typography>
+                  <Typography sx={{ textAlign: "center", color: "#8B7355", fontSize: "0.8rem" }}>{folder.photos.length} photos</Typography>
+                </MotionBox>
+              ))}
+            </Box>
+          )}
         </Box>
       </Box>
 
-      {activePhoto !== null && (
+      {activeFolder !== null && (
         <Box
-          onClick={() => setActivePhoto(null)}
+          onClick={() => setActiveFolder(null)}
           sx={{
             position: "fixed",
             inset: 0,
@@ -388,13 +497,17 @@ const WelcomeDetailPage = ({ page, onBackToCards }) => {
             px: 2,
           }}
         >
-          <Button onClick={(e) => { e.stopPropagation(); movePhoto(-1); }} sx={{ minWidth: 0, position: "absolute", left: { xs: 4, md: 18 }, color: "#fff" }}>
-            <ChevronLeftRoundedIcon sx={{ fontSize: 38 }} />
-          </Button>
-          <Button onClick={(e) => { e.stopPropagation(); movePhoto(1); }} sx={{ minWidth: 0, position: "absolute", right: { xs: 4, md: 18 }, color: "#fff" }}>
-            <ChevronRightRoundedIcon sx={{ fontSize: 38 }} />
-          </Button>
-          <Button onClick={(e) => { e.stopPropagation(); setActivePhoto(null); }} sx={{ minWidth: 0, position: "absolute", top: 16, right: 16, color: "#fff" }}>
+          {activeFolderPhotos.length > 1 && (
+            <Button onClick={(e) => { e.stopPropagation(); movePhoto(-1); }} sx={{ minWidth: 0, position: "absolute", left: { xs: 4, md: 18 }, color: "#fff" }}>
+              <ChevronLeftRoundedIcon sx={{ fontSize: 38 }} />
+            </Button>
+          )}
+          {activeFolderPhotos.length > 1 && (
+            <Button onClick={(e) => { e.stopPropagation(); movePhoto(1); }} sx={{ minWidth: 0, position: "absolute", right: { xs: 4, md: 18 }, color: "#fff" }}>
+              <ChevronRightRoundedIcon sx={{ fontSize: 38 }} />
+            </Button>
+          )}
+          <Button onClick={(e) => { e.stopPropagation(); setActiveFolder(null); }} sx={{ minWidth: 0, position: "absolute", top: 16, right: 16, color: "#fff" }}>
             <CloseRoundedIcon />
           </Button>
           <Box onClick={(e) => e.stopPropagation()} sx={{ ...paperSx, width: "min(460px, 92vw)", p: "14px 14px 40px" }}>
@@ -402,14 +515,17 @@ const WelcomeDetailPage = ({ page, onBackToCards }) => {
               sx={{
                 aspectRatio: "1 / 1",
                 borderRadius: "2px",
-                background: photos[activePhoto]?.tone,
-                backgroundImage: photos[activePhoto]?.image ? `url("${resolvePublicImage(photos[activePhoto].image)}")` : "none",
+                background: activeFolderPhotos[activePhoto]?.tone,
+                backgroundImage: activeFolderPhotos[activePhoto]?.image ? `url("${activeFolderPhotos[activePhoto].image}")` : "none",
                 backgroundSize: "cover",
                 backgroundPosition: "center",
                 backgroundRepeat: "no-repeat",
               }}
             />
-            <Typography sx={{ textAlign: "center", mt: 1.2, color: "#6F4E37", fontSize: "1.25rem" }}>{photos[activePhoto]?.caption}</Typography>
+            <Typography sx={{ textAlign: "center", mt: 1.2, color: "#6F4E37", fontSize: "1.25rem" }}>{folderCards[activeFolder]?.caption}</Typography>
+            <Typography sx={{ textAlign: "center", color: "#8B7355", fontSize: "0.9rem" }}>
+              {activePhoto + 1} / {activeFolderPhotos.length}
+            </Typography>
           </Box>
         </Box>
       )}
@@ -451,30 +567,6 @@ const DetailShell = ({ page, onBackToCards, children }) => {
     </MotionBox>
   );
 };
-
-const StoryDetailPage = ({ page, onBackToCards }) => (
-  <DetailShell page={page} onBackToCards={onBackToCards}>
-    <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" }, gap: 2 }}>
-      <Box sx={{ p: 2, borderRadius: "8px", border: "1px solid rgba(201,160,117,0.28)", backgroundColor: "rgba(255,255,255,0.9)" }}>
-        <Typography sx={{ color: "#5D4E3C", fontSize: "1.45rem", mb: 1 }}>Narrative</Typography>
-        {page.details?.map((item, idx) => (
-          <Typography key={idx} sx={{ color: "#8B7355", fontSize: "1rem", lineHeight: 1.55, mb: 1 }}>
-            {item}
-          </Typography>
-        ))}
-      </Box>
-      <Box sx={{ p: 2, borderRadius: "8px", border: "1px solid rgba(201,160,117,0.28)", backgroundColor: "rgba(255,255,255,0.9)" }}>
-        <Typography sx={{ color: "#5D4E3C", fontSize: "1.45rem", mb: 1 }}>Milestones</Typography>
-        {page.timeline?.map((item) => (
-          <Box key={item.year} sx={{ pb: 1.2, mb: 1.2, borderBottom: "1px solid rgba(201,160,117,0.22)" }}>
-            <Typography sx={{ color: "#5D4E3C", fontSize: "1.05rem" }}>{item.year} - {item.label}</Typography>
-            <Typography sx={{ color: "#8B7355", fontSize: "0.95rem" }}>{item.note}</Typography>
-          </Box>
-        ))}
-      </Box>
-    </Box>
-  </DetailShell>
-);
 
 const ScheduleDetailPage = ({ page, onBackToCards }) => (
   <DetailShell page={page} onBackToCards={onBackToCards}>
@@ -877,7 +969,6 @@ const PhotosDetailPage = ({ page, onBackToCards }) => {
 
 const DetailPage = ({ pageKey, page, onBackToCards }) => {
   if (pageKey === "welcome") return <WelcomeDetailPage page={page} onBackToCards={onBackToCards} />;
-  if (pageKey === "story") return <StoryDetailPage page={page} onBackToCards={onBackToCards} />;
   if (pageKey === "schedule") return <ScheduleDetailPage page={page} onBackToCards={onBackToCards} />;
   if (pageKey === "travel") return <TravelDetailPage page={page} onBackToCards={onBackToCards} />;
   if (pageKey === "details") return <DetailsDetailPage page={page} onBackToCards={onBackToCards} />;
@@ -1061,3 +1152,4 @@ export const SharedOnepager = ({ onBackToInvitation, variant = "desktop" }) => {
 };
 
 export default SharedOnepager;
+

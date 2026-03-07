@@ -27,6 +27,22 @@ const BackgroundMusicControl = () => {
     audio.addEventListener("canplay", onCanPlay);
     audio.addEventListener("error", onError);
 
+    const onPlayRequest = async () => {
+      try {
+        audio.muted = false;
+        await audio.play();
+        setIsPlaying(true);
+        setIsMutedPlayback(false);
+        setHasError(false);
+      } catch (error) {
+        if (error?.name !== "NotAllowedError") {
+          setHasError(true);
+        }
+      }
+    };
+
+    window.addEventListener("wedding:music-play-request", onPlayRequest);
+
     const tryAutoplay = async () => {
       try {
         audio.muted = false;
@@ -57,6 +73,7 @@ const BackgroundMusicControl = () => {
       audio.removeEventListener("pause", onPause);
       audio.removeEventListener("canplay", onCanPlay);
       audio.removeEventListener("error", onError);
+      window.removeEventListener("wedding:music-play-request", onPlayRequest);
       audioRef.current = null;
     };
   }, []);

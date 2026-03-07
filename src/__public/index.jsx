@@ -91,6 +91,10 @@ const pageTheme = createTheme({
 export const Index = () => {
   const [view, setView] = useState('invitation'); // 'invitation' | 'onepager'
   const [rsvpOpen, setRsvpOpen] = useState(false);
+  const onRsvpClick = () => {
+    window.dispatchEvent(new Event('wedding:music-play-request'));
+    setRsvpOpen(true);
+  };
 
   return (
     <ThemeProvider theme={pageTheme}>
@@ -124,7 +128,7 @@ export const Index = () => {
           {view === 'onepager' ? (
             <OnepagerResponsive onBackToInvitation={() => setView('invitation')} />
           ) : (
-            <InvitationResponsive onRsvpClick={() => setRsvpOpen(true)} />
+            <InvitationResponsive onRsvpClick={onRsvpClick} />
           )}
           <RsvpDialog
             open={rsvpOpen}

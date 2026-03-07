@@ -99,7 +99,7 @@ export const onepagerContent = {
       name: "Diocesan Shrine and Parish of Saint Pio of Pietrelcina",
       note: "formerly San Pedro Calungsod Parish",
       time: "3:00 in the afternoon",
-      date: "Saturday, July 20, 2026",
+      date: "Saturday, April 25, 2026",
     },
     reception: {
       label: "Reception",
@@ -111,3 +111,4 @@ export const onepagerContent = {
 
   backToInvitation: "Back to Invitation",
 };
+

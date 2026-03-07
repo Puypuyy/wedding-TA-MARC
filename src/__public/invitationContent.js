@@ -11,7 +11,7 @@ export const invitationContent = {
     second: "Anna Marie",
   },
   tagline: "are getting married",
-  date: "Saturday, the 24th of April 2026",
+  date: "Saturday, the 25th of April 2026",
   time: "at 1:30 in the afternoon",
   venue: {
     name: "Diocesan Shrine and Parish of Saint Pio of Pietrelcina",
@@ -20,3 +20,4 @@ export const invitationContent = {
   cta: "RSVP Now",
   footer: "We look forward to celebrating with you",
 };
+
