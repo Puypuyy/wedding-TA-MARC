@@ -102,7 +102,7 @@ const weddingStatic = {
         "Mrs. Emelita R. Soriano",
       ],
       entourage: {
-        bestGirl: "Ms. Angelica Mae E. Nepomuceno",
+        maidOfHonor: "Ms. Angelica Mae E. Nepomuceno",
         matronOfHonor: "Mrs. Contessa P. Borja",
         bestMan: "Mr. Czaremar Y. Apit",
       },
@@ -112,19 +112,18 @@ const weddingStatic = {
         Arrhae: ["Ms. Carmina Ann Felix", "Mr. Patrick Edison Uy"],
         Veil: ["Ms. Erica Mae G. Capatayan", "Mr. Arvin Cayabyab"],
         Bible: ["Ms. Akemi Inabayashi", "Mr. Joseph Jongko"],
+        "Ring Bearer": ["Ms. Viona Mariz Joy D. Rendon", "Mr. Alexis Mari D. Rendon", "ft. Roshi"],
       },
-      ringBearers: ["Ms. Viona Mariz Joy Rendon", "Mr. Alexis Mari Rendon"],
       bridesmaids: [
-        "Ms. Angelica B. Quioyo",
-        "Ms. Mary Cathlene Nicole Poniado",
         "Ms. Joefcelyn C. Parejo",
         "Ms. Jessy Ruth Caballero",
+        "Ms. Angelica B. Quioyo",
+        "Ms. Mary Cathlene Nicole Poniado",
       ],
       groomsmen: [
-        "Mr. Jasper Jay T. Bumatay",
         "Mr. Mike Lawrence Malapajo",
-        "Mr. Vince Tambor",
         "Mr. Napoleon Aquino Jr.",
+        "Mr. Jasper Jay T. Bumatay",
       ],
       guestGuide: {
         dressCode: [
@@ -140,6 +139,26 @@ const weddingStatic = {
           "GIFTS\nYour love, prayers, and presence on our special day mean the world to us. We already feel so blessed to be celebrating our dream wedding with you. Should you wish to give a gift, we would deeply appreciate a monetary one to help us begin our new journey together.",
         ],
       },
+      howToGetThere: [
+        {
+          label: "Church",
+          venue: "Diocesan Shrine and Parish of Saint Pio of Pietrelcina (formerly known as San Pedro Calungsod Parish)",
+          address: "106 Sumulong Hwy, Antipolo, 1870 Rizal",
+          pinLocation: "J49X+9F Antipolo, Rizal",
+          image: "/images/map/parish.jpg",
+          mapsUrl: "https://www.google.com/maps/search/?api=1&query=Diocesan+Shrine+and+Parish+of+Saint+Pio+of+Pietrelcina+Antipolo",
+          embedUrl: "https://www.google.com/maps?q=Diocesan%20Shrine%20and%20Parish%20of%20Saint%20Pio%20of%20Pietrelcina%20Antipolo&output=embed",
+        },
+        {
+          label: "Reception",
+          venue: "Fernwood Gardens Antipolo",
+          address: "106 Sumulong Hwy, Antipolo, 1870 Rizal",
+          pinLocation: "J49X+9F Antipolo, Rizal",
+          image: "/images/map/fernwood.jpg",
+          mapsUrl: "https://www.google.com/maps/search/?api=1&query=Fernwood+Gardens+Antipolo",
+          embedUrl: "https://www.google.com/maps?q=Fernwood%20Gardens%20Antipolo&output=embed",
+        },
+      ],
     },
     photos: {
       title: "Prenup Photos",
@@ -219,6 +238,10 @@ const uploadedPhotos = Object.entries(
     import: "default",
   }),
 )
+  .filter(([filePath]) => {
+    const fileName = (filePath.split("/").pop() || "").toLowerCase();
+    return !fileName.startsWith("churchbg.");
+  })
   .map(([filePath, assetUrl]) => {
     const fileName = filePath.split("/").pop() || "Photo";
     const title = fileName.replace(/\.[^/.]+$/, "").replace(/[-_]+/g, " ").trim();
@@ -687,6 +710,7 @@ const DetailsDetailPage = ({ page, onBackToCards }) => {
     { id: "secondary", label: "Secondary Sponsors" },
     { id: "roles", label: "Wedding Roles" },
     { id: "guide", label: "Guest Guide" },
+    { id: "how-to-get-there", label: "How to Get There" },
   ];
   const panelSx = {
     p: { xs: 2.1, md: 2.3 },
@@ -817,8 +841,8 @@ const DetailsDetailPage = ({ page, onBackToCards }) => {
       {activeSection === "entourage" && (
         <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 1fr 1fr" }, gap: 2 }}>
           <Box sx={panelSx}>
-            <Typography sx={{ color: "#5D4E3C", fontSize: "1.2rem", mb: 0.45 }}>Best Girl</Typography>
-            <Typography sx={{ color: "#8B7355", fontSize: "1.02rem" }}>{page.entourage?.bestGirl}</Typography>
+            <Typography sx={{ color: "#5D4E3C", fontSize: "1.2rem", mb: 0.45 }}>Maid of Honor</Typography>
+            <Typography sx={{ color: "#8B7355", fontSize: "1.02rem" }}>{page.entourage?.maidOfHonor}</Typography>
           </Box>
           <Box sx={panelSx}>
             <Typography sx={{ color: "#5D4E3C", fontSize: "1.2rem", mb: 0.45 }}>Matron of Honor</Typography>
@@ -854,11 +878,7 @@ const DetailsDetailPage = ({ page, onBackToCards }) => {
       )}
 
       {activeSection === "roles" && (
-        <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 1fr 1fr" }, gap: 2 }}>
-          <Box sx={panelSx}>
-            <Typography sx={{ color: "#5D4E3C", fontSize: "1.2rem", mb: 0.4 }}>Ring Bearer</Typography>
-            {page.ringBearers?.map((n) => <Typography key={n} sx={{ color: "#8B7355", fontSize: "0.98rem" }}>{n}</Typography>)}
-          </Box>
+        <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" }, gap: 2 }}>
           <Box sx={panelSx}>
             <Typography sx={{ color: "#5D4E3C", fontSize: "1.2rem", mb: 0.4 }}>Bridesmaids</Typography>
             {page.bridesmaids?.map((n) => <Typography key={n} sx={{ color: "#8B7355", fontSize: "0.98rem" }}>{n}</Typography>)}
@@ -905,10 +925,113 @@ const DetailsDetailPage = ({ page, onBackToCards }) => {
 
           <Box>
             <Typography sx={{ color: "#5D4E3C", fontSize: "1.08rem", mb: 0.65, letterSpacing: 0.6, textTransform: "uppercase" }}>Important Notes</Typography>
-            {page.guestGuide?.notes?.map((note, idx) => (
-              <Typography key={idx} sx={{ color: "#8B7355", fontSize: "0.98rem", lineHeight: 1.6, mb: 1.05, whiteSpace: "pre-line" }}>
-                {note}
-              </Typography>
+            {page.guestGuide?.notes?.map((note, idx) => {
+              const [title, ...bodyParts] = String(note).split("\n");
+              const hasTitle = bodyParts.length > 0;
+              const body = bodyParts.join("\n");
+
+              return (
+                <Box key={idx} sx={{ mb: 1.05 }}>
+                  {hasTitle ? (
+                    <>
+                      <Typography sx={{ color: "#5D4E3C", fontSize: "1.08rem", mb: 0.45, letterSpacing: 0.6, textTransform: "uppercase" }}>
+                        {title}
+                      </Typography>
+                      <Typography sx={{ color: "#8B7355", fontSize: "0.98rem", lineHeight: 1.6, whiteSpace: "pre-line" }}>
+                        {body}
+                      </Typography>
+                    </>
+                  ) : (
+                    <Typography sx={{ color: "#8B7355", fontSize: "0.98rem", lineHeight: 1.6, whiteSpace: "pre-line" }}>
+                      {note}
+                    </Typography>
+                  )}
+                </Box>
+              );
+            })}
+          </Box>
+        </Box>
+      )}
+      {activeSection === "how-to-get-there" && (
+        <Box sx={panelSx}>
+          <Typography sx={{ color: "#5D4E3C", fontSize: "1.35rem", mb: 1.1 }}>How to Get There</Typography>
+          <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" }, gap: 1.5 }}>
+            {page.howToGetThere?.map((place) => (
+              <Box
+                key={place.label}
+                sx={{
+                  p: 1.7,
+                  borderRadius: "10px",
+                  border: "1px solid rgba(201,160,117,0.28)",
+                  backgroundColor: "rgba(255,255,255,0.88)",
+                }}
+              >
+                <Typography sx={{ color: "#5D4E3C", fontSize: "1.1rem", mb: 0.55 }}>{place.label}</Typography>
+                <Typography sx={{ color: "#6F4E37", fontSize: "0.98rem", lineHeight: 1.5, mb: 0.65 }}>
+                  {place.venue}
+                </Typography>
+                <Typography sx={{ color: "#8B7355", fontSize: "0.98rem", lineHeight: 1.5, mb: 1 }}>
+                  Address: {place.address}
+                </Typography>
+                <Typography sx={{ color: "#8B7355", fontSize: "0.95rem", lineHeight: 1.5, mb: 1 }}>
+                  Pin Location: {place.pinLocation}
+                </Typography>
+                {place.image ? (
+                  <Box
+                    component="img"
+                    src={resolvePublicImage(place.image)}
+                    alt={`${place.label} location`}
+                    sx={{
+                      width: "100%",
+                      height: { xs: 165, md: 200 },
+                      objectFit: "cover",
+                      borderRadius: "10px",
+                      border: "1px solid rgba(201,160,117,0.24)",
+                      mb: 1.1,
+                    }}
+                  />
+                ) : null}
+                <Button
+                  component="a"
+                  href={place.mapsUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  variant="outlined"
+                  sx={{
+                    borderRadius: "999px",
+                    borderColor: "rgba(156,107,47,0.38)",
+                    color: "#7A5630",
+                    px: 1.4,
+                    textTransform: "none",
+                    "&:hover": { borderColor: "#9C6B2F", backgroundColor: "rgba(201,160,117,0.12)" },
+                  }}
+                >
+                  Open in Google Maps
+                </Button>
+                <Box
+                  sx={{
+                    mt: 1.15,
+                    borderRadius: "10px",
+                    overflow: "hidden",
+                    border: "1px solid rgba(201,160,117,0.24)",
+                    backgroundColor: "#f4efe8",
+                    height: { xs: 180, md: 220 },
+                  }}
+                >
+                  <Box
+                    component="iframe"
+                    title={`${place.label} map`}
+                    src={place.embedUrl}
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                    sx={{
+                      width: "100%",
+                      height: "100%",
+                      border: 0,
+                    }}
+                  />
+                </Box>
+              </Box>
             ))}
           </Box>
         </Box>
