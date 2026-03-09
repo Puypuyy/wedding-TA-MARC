@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
-import { Box, Button, Divider, Typography, useMediaQuery } from "@mui/material";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Box, Button, Divider, Table, TableBody, TableCell, TableContainer, TableRow, Typography, useMediaQuery } from "@mui/material";
 import { motion } from "framer-motion";
 import SpaOutlinedIcon from "@mui/icons-material/SpaOutlined";
 import EventOutlinedIcon from "@mui/icons-material/EventOutlined";
@@ -21,7 +21,7 @@ const weddingStatic = {
       title: "Welcome",
       preview: "A graceful beginning to our celebration.",
       icon: SpaOutlinedIcon,
-      quote: "Here's a sneak peak of Marc & Anna through out almost 9 years of being in love. Together with their closest friends and families. 🩷",
+      quote: "Nine years of love, captured in a few moments. Here’s a look at Marc and Anna’s story, shared with the friends and family who have been there since the beginning. 🩷",
       hero: "An Evening of Vows, Elegance, and Celebration",
       venue: "Garden Estate, Tuscany",
       details: [
@@ -83,23 +83,23 @@ const weddingStatic = {
       ],
       principalSponsors: [
         "Mr. Ronnel C. Gacula",
-        "Mr. Josiah Villegas",
+        "Mr. Eliel Josiah J. Villegas",
         "Mr. Roderick R. Villanueva",
         "Mr. Napoleon V. Aquino Sr.",
         "Mr. Hadji M. Tejada",
         "Mr. Sergio L. Haveria",
-        "Mr. Joey Francisco",
-        "Mr. James Bernardo",
-        "Mr. Alex Soriano",
+        "Mr. Joselito M. Francisco",
+        "Mr. James D. Bernardo",
+        "Mr. Agustin C. Soriano",
         "Mrs. Charlete Karl T. Labrador",
-        "Mrs. Sarrah Villegas",
+        "Mrs. Sarrah Joy Magadalene G. Villegas",
         "Mrs. Maria Cristina S. Dematera",
         "Mrs. Lanie S. Aquino",
         "Mrs. Michelle S. Tejada",
         "Mrs. Lilia D. Haveria",
         "Mrs. Celeste A. Marco",
         "Mrs. Jocelyn F. Lejano",
-        "Mrs. Emelita Soriano",
+        "Mrs. Emelita R. Soriano",
       ],
       entourage: {
         bestGirl: "Ms. Angelica Mae E. Nepomuceno",
@@ -129,15 +129,15 @@ const weddingStatic = {
       guestGuide: {
         dressCode: [
           "We kindly request our guests to attend in formal evening attire.",
-          "Gentlemen: Black suit with an inner shirt in a shade from the color palette.",
+          "Gentlemen: Any suit with an inner shirt in a shade from the color palette.",
           "Ladies: Floor-length gown from the color palette. Floral gowns are welcome!",
         ],
-        paletteGuests: ["#056385", "#b1ddf1", "#d1edfb", "#e9dec3", "#faf0b4", "#fff9d9"],
+        paletteGuests: ["#056385", "#b1ddf1", "#d1edfb", "#e9c50e", "#b0bf81"],
         paletteSponsors: ["#f6e7d7", "#d6c7b5", "#c9c9c9"],
         notes: [
-          "We adore your little ones, but we kindly ask that our wedding be an adult-only celebration. We completely understand if you're unable to join us should no one be available to look after them-we'll be celebrating with you in spirit.",
-          "UNPLUGGED CEREMONY: We've hired some amazing photographers to capture our best angles-so sit back, relax, and enjoy the moment with us. Kindly refrain from taking photos during the ceremony and let the professionals work their magic.",
-          "GIFTS: Your love, prayers, and presence on our special day mean the world to us. We already feel so blessed to be celebrating our dream wedding with you. Should you wish to give a gift, we would deeply appreciate a monetary one to help us begin our new journey together.",
+          "We adore your little ones, but we kindly ask that our wedding be an adult-only celebration. We completely understand if you're unable to join us should no one be available to look after them - we'll be celebrating with you in spirit.",
+          "UNPLUGGED CEREMONY\nWe've hired some amazing photographers to capture our best angles - so sit back, relax, and enjoy the moment with us! Kindly refrain from taking photos during the ceremony and let the professionals work their magic.",
+          "GIFTS\nYour love, prayers, and presence on our special day mean the world to us. We already feel so blessed to be celebrating our dream wedding with you. Should you wish to give a gift, we would deeply appreciate a monetary one to help us begin our new journey together.",
         ],
       },
     },
@@ -234,7 +234,7 @@ const uploadedPhotos = Object.entries(
 const uploadedWelcomePhotoGroups = (() => {
   const byFolder = new Map();
   const entries = Object.entries(
-    import.meta.glob("../../../public/images/welcome-photos/**/*.{jpg,jpeg,png,webp,avif,JPG,JPEG,PNG,WEBP,AVIF}", {
+    import.meta.glob("../../../public/images/welcome-photos/**/*.{jpg,jpeg,png,webp,avif,heic,JPG,JPEG,PNG,WEBP,AVIF,HEIC}", {
       eager: true,
       import: "default",
     }),
@@ -319,6 +319,7 @@ const PageCard = ({ page, isMobile, isTablet, styleSx, onClick }) => {
 const WelcomeDetailPage = ({ page, onBackToCards }) => {
   const [activeFolder, setActiveFolder] = useState(null);
   const [activePhoto, setActivePhoto] = useState(0);
+  const preloadedWelcomeImagesRef = useRef(new Set());
   const desktopFolderLayout = [
     { left: "2%", top: "2%", rotate: "-6deg", zIndex: 5 },
     { left: "22%", top: "0%", rotate: "4deg", zIndex: 6 },
@@ -354,6 +355,20 @@ const WelcomeDetailPage = ({ page, onBackToCards }) => {
     if (!activeFolderPhotos.length) return;
     setActivePhoto((prev) => (prev + direction + activeFolderPhotos.length) % activeFolderPhotos.length);
   };
+
+  useEffect(() => {
+    if (!activeFolderPhotos.length) return;
+    const wrapIndex = (idx) => (idx + activeFolderPhotos.length) % activeFolderPhotos.length;
+    const preloadIndices = [activePhoto, wrapIndex(activePhoto - 1), wrapIndex(activePhoto + 1), wrapIndex(activePhoto + 2)];
+
+    preloadIndices.forEach((idx) => {
+      const src = activeFolderPhotos[idx]?.image;
+      if (!src || preloadedWelcomeImagesRef.current.has(src)) return;
+      const img = new Image();
+      img.src = src;
+      preloadedWelcomeImagesRef.current.add(src);
+    });
+  }, [activeFolderPhotos, activePhoto]);
 
   return (
     <MotionBox initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} sx={{ minHeight: "100vh", px: { xs: 2, md: 4 }, py: 3 }}>
@@ -514,22 +529,73 @@ const WelcomeDetailPage = ({ page, onBackToCards }) => {
           <Button onClick={(e) => { e.stopPropagation(); setActiveFolder(null); }} sx={{ minWidth: 0, position: "absolute", top: 16, right: 16, color: "#fff" }}>
             <CloseRoundedIcon />
           </Button>
-          <Box onClick={(e) => e.stopPropagation()} sx={{ ...paperSx, width: "min(460px, 92vw)", p: "14px 14px 40px" }}>
+          <Box onClick={(e) => e.stopPropagation()} sx={{ ...paperSx, width: "min(560px, 94vw)", p: "14px 14px 20px" }}>
             <Box
               sx={{
                 aspectRatio: "1 / 1",
                 borderRadius: "2px",
-                background: activeFolderPhotos[activePhoto]?.tone,
-                backgroundImage: activeFolderPhotos[activePhoto]?.image ? `url("${activeFolderPhotos[activePhoto].image}")` : "none",
-                backgroundSize: "cover",
-                backgroundPosition: "center",
-                backgroundRepeat: "no-repeat",
+                background: activeFolderPhotos[activePhoto]?.tone || "linear-gradient(135deg, #c9b8a8 0%, #a89080 100%)",
+                overflow: "hidden",
+                position: "relative",
               }}
-            />
+            >
+              {activeFolderPhotos[activePhoto]?.image && (
+                <Box
+                  component="img"
+                  src={activeFolderPhotos[activePhoto].image}
+                  alt={activeFolderPhotos[activePhoto]?.title || "Photo"}
+                  loading="eager"
+                  decoding="async"
+                  sx={{
+                    width: "100%",
+                    height: "100%",
+                    display: "block",
+                    objectFit: "cover",
+                  }}
+                />
+              )}
+            </Box>
             <Typography sx={{ textAlign: "center", mt: 1.2, color: "#6F4E37", fontSize: "1.25rem" }}>{folderCards[activeFolder]?.caption}</Typography>
             <Typography sx={{ textAlign: "center", color: "#8B7355", fontSize: "0.9rem" }}>
               {activePhoto + 1} / {activeFolderPhotos.length}
             </Typography>
+
+            {activeFolderPhotos.length > 1 && (
+              <Box sx={{ mt: 1.1, display: "flex", gap: 0.8, overflowX: "auto", pb: 0.2 }}>
+                {activeFolderPhotos.map((photo, idx) => (
+                  <Box
+                    key={`${photo.title}-${idx}`}
+                    onClick={() => setActivePhoto(idx)}
+                    sx={{
+                      width: 64,
+                      height: 78,
+                      flex: "0 0 auto",
+                      borderRadius: "3px",
+                      cursor: "pointer",
+                      border: idx === activePhoto ? "2px solid #C9A075" : "1px solid rgba(201,160,117,0.35)",
+                      background: photo.tone || "linear-gradient(135deg, #c9b8a8 0%, #a89080 100%)",
+                      overflow: "hidden",
+                    }}
+                  >
+                    {photo.image && (
+                      <Box
+                        component="img"
+                        src={photo.image}
+                        alt={photo.title || `Photo ${idx + 1}`}
+                        loading="lazy"
+                        decoding="async"
+                        sx={{
+                          width: "100%",
+                          height: "100%",
+                          display: "block",
+                          objectFit: "cover",
+                        }}
+                      />
+                    )}
+                  </Box>
+                ))}
+              </Box>
+            )}
           </Box>
         </Box>
       )}
@@ -628,6 +694,14 @@ const DetailsDetailPage = ({ page, onBackToCards }) => {
     border: "1px solid rgba(201,160,117,0.28)",
     backgroundColor: "rgba(255,255,255,0.94)",
   };
+  const principalSponsors = page.principalSponsors || [];
+  const principalSplitAt = Math.ceil(principalSponsors.length / 2);
+  const principalLeft = principalSponsors.slice(0, principalSplitAt);
+  const principalRight = principalSponsors.slice(principalSplitAt);
+  const principalRows = Array.from({ length: Math.max(principalLeft.length, principalRight.length) }, (_, idx) => ({
+    left: principalLeft[idx] || "",
+    right: principalRight[idx] || "",
+  }));
 
   return (
     <DetailShell page={page} onBackToCards={onBackToCards}>
@@ -644,7 +718,7 @@ const DetailsDetailPage = ({ page, onBackToCards }) => {
           p: 1,
         }}
       >
-        <Box sx={{ display: "flex", gap: 0.8, overflowX: "auto", pb: 0.2 }}>
+        <Box sx={{ display: "flex", gap: 0.8, overflowX: "auto", pb: 0.2, justifyContent: "center", flexWrap: "wrap" }}>
           {sections.map((section) => (
             <Button
               key={section.id}
@@ -670,6 +744,7 @@ const DetailsDetailPage = ({ page, onBackToCards }) => {
         </Box>
       </Box>
 
+      <Box sx={{ maxWidth: 980, mx: "auto", textAlign: "center" }}>
       {activeSection === "parents" && (
         <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" }, gap: 2 }}>
           <Box sx={{ ...panelSx, background: "linear-gradient(145deg, rgba(255,255,255,0.95) 0%, rgba(250,245,238,0.95) 100%)" }}>
@@ -688,11 +763,54 @@ const DetailsDetailPage = ({ page, onBackToCards }) => {
       {activeSection === "principal" && (
         <Box sx={panelSx}>
           <Typography sx={{ color: "#5D4E3C", fontSize: "1.45rem", mb: 1 }}>Principal Sponsors</Typography>
-          <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" }, gap: 0.75 }}>
-            {page.principalSponsors?.map((name) => (
-              <Typography key={name} sx={{ color: "#8B7355", fontSize: "1rem", py: 0.25 }}>{name}</Typography>
-            ))}
-          </Box>
+          <TableContainer
+            sx={{
+              border: "1px solid rgba(201,160,117,0.26)",
+              borderRadius: "10px",
+              overflow: "hidden",
+              background: "rgba(255,255,255,0.82)",
+            }}
+          >
+            <Table size="small" sx={{ tableLayout: "fixed" }}>
+              <TableBody>
+                {principalRows.map((row, idx) => (
+                  <TableRow
+                    key={`${row.left}-${row.right}-${idx}`}
+                    sx={{
+                      "&:last-child td": { borderBottom: "none" },
+                      backgroundColor: idx % 2 === 0 ? "rgba(250,246,239,0.78)" : "rgba(255,255,255,0.86)",
+                    }}
+                  >
+                    <TableCell
+                      sx={{
+                        width: "50%",
+                        verticalAlign: "top",
+                        textAlign: "center",
+                        borderColor: "rgba(201,160,117,0.2)",
+                        borderRight: "1px solid rgba(201,160,117,0.18)",
+                        px: { xs: 0.8, md: 1.5 },
+                        py: { xs: 0.8, md: 1.1 },
+                      }}
+                    >
+                      <Typography sx={{ color: "#6F4E37", fontSize: { xs: "0.86rem", md: "0.98rem" }, lineHeight: 1.34, wordBreak: "break-word" }}>{row.left}</Typography>
+                    </TableCell>
+                    <TableCell
+                      sx={{
+                        width: "50%",
+                        verticalAlign: "top",
+                        textAlign: "center",
+                        borderColor: "rgba(201,160,117,0.2)",
+                        px: { xs: 0.8, md: 1.5 },
+                        py: { xs: 0.8, md: 1.1 },
+                      }}
+                    >
+                      <Typography sx={{ color: "#6F4E37", fontSize: { xs: "0.86rem", md: "0.98rem" }, lineHeight: 1.34, wordBreak: "break-word" }}>{row.right}</Typography>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
         </Box>
       )}
 
@@ -742,7 +860,7 @@ const DetailsDetailPage = ({ page, onBackToCards }) => {
             {page.ringBearers?.map((n) => <Typography key={n} sx={{ color: "#8B7355", fontSize: "0.98rem" }}>{n}</Typography>)}
           </Box>
           <Box sx={panelSx}>
-            <Typography sx={{ color: "#5D4E3C", fontSize: "1.2rem", mb: 0.4 }}>Bridesmaid</Typography>
+            <Typography sx={{ color: "#5D4E3C", fontSize: "1.2rem", mb: 0.4 }}>Bridesmaids</Typography>
             {page.bridesmaids?.map((n) => <Typography key={n} sx={{ color: "#8B7355", fontSize: "0.98rem" }}>{n}</Typography>)}
           </Box>
           <Box sx={panelSx}>
@@ -765,11 +883,10 @@ const DetailsDetailPage = ({ page, onBackToCards }) => {
 
           <Box sx={{ mb: 2.2 }}>
             <Typography sx={{ color: "#5D4E3C", fontSize: "1.08rem", mb: 0.65, letterSpacing: 0.6, textTransform: "uppercase" }}>Color Palette - Guests</Typography>
-            <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
+            <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", justifyContent: "center" }}>
               {page.guestGuide?.paletteGuests?.map((hex) => (
-                <Box key={hex} sx={{ display: "flex", alignItems: "center", gap: 0.5, pr: 1 }}>
-                  <Box sx={{ width: 20, height: 20, borderRadius: "50%", backgroundColor: hex, border: "1px solid rgba(0,0,0,0.15)" }} />
-                  <Typography sx={{ color: "#8B7355", fontSize: "0.86rem" }}>{hex}</Typography>
+                <Box key={hex} sx={{ display: "flex", alignItems: "center", pr: 0.25 }}>
+                  <Box sx={{ width: 28, height: 28, borderRadius: "50%", backgroundColor: hex, border: "1px solid rgba(0,0,0,0.15)" }} />
                 </Box>
               ))}
             </Box>
@@ -777,11 +894,10 @@ const DetailsDetailPage = ({ page, onBackToCards }) => {
 
           <Box sx={{ mb: 2.2 }}>
             <Typography sx={{ color: "#5D4E3C", fontSize: "1.08rem", mb: 0.65, letterSpacing: 0.6, textTransform: "uppercase" }}>Color Palette - Principal Sponsors</Typography>
-            <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
+            <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", justifyContent: "center" }}>
               {page.guestGuide?.paletteSponsors?.map((hex) => (
-                <Box key={hex} sx={{ display: "flex", alignItems: "center", gap: 0.5, pr: 1 }}>
-                  <Box sx={{ width: 20, height: 20, borderRadius: "50%", backgroundColor: hex, border: "1px solid rgba(0,0,0,0.15)" }} />
-                  <Typography sx={{ color: "#8B7355", fontSize: "0.86rem" }}>{hex}</Typography>
+                <Box key={hex} sx={{ display: "flex", alignItems: "center", pr: 0.25 }}>
+                  <Box sx={{ width: 28, height: 28, borderRadius: "50%", backgroundColor: hex, border: "1px solid rgba(0,0,0,0.15)" }} />
                 </Box>
               ))}
             </Box>
@@ -790,13 +906,14 @@ const DetailsDetailPage = ({ page, onBackToCards }) => {
           <Box>
             <Typography sx={{ color: "#5D4E3C", fontSize: "1.08rem", mb: 0.65, letterSpacing: 0.6, textTransform: "uppercase" }}>Important Notes</Typography>
             {page.guestGuide?.notes?.map((note, idx) => (
-              <Typography key={idx} sx={{ color: "#8B7355", fontSize: "0.98rem", lineHeight: 1.6, mb: 1.05 }}>
+              <Typography key={idx} sx={{ color: "#8B7355", fontSize: "0.98rem", lineHeight: 1.6, mb: 1.05, whiteSpace: "pre-line" }}>
                 {note}
               </Typography>
             ))}
           </Box>
         </Box>
       )}
+      </Box>
     </DetailShell>
   );
 };
@@ -1110,6 +1227,10 @@ export const SharedOnepager = ({ onBackToInvitation, variant = "desktop" }) => {
             onClick={() => setOpened(true)}
             sx={{
               ...paperSx,
+              backgroundImage: `linear-gradient(180deg, rgba(255,255,255,0.38) 0%, rgba(255,255,255,0.62) 100%), url("${resolvePublicImage("/images/photos/ChurchBG.png")}")`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              backgroundRepeat: "no-repeat",
               width: isMobile ? "100%" : isTablet ? 460 : 520,
               maxWidth: "100%",
               height: isMobile ? 300 : 330,
@@ -1122,15 +1243,58 @@ export const SharedOnepager = ({ onBackToInvitation, variant = "desktop" }) => {
               justifyItems: "center",
             }}
           >
-            <Button onClick={(e) => { e.stopPropagation(); onBackToInvitation(); }} variant="text" sx={{ position: "absolute", top: 8, right: 8, color: "#8B7355", fontSize: "0.8rem" }}>
+            <Button
+              onClick={(e) => { e.stopPropagation(); onBackToInvitation(); }}
+              variant="text"
+              sx={{
+                position: "absolute",
+                top: 8,
+                right: 8,
+                color: "#3F2D1E",
+                fontSize: "0.8rem",
+                fontWeight: 700,
+                textShadow: "0 1px 2px rgba(255,255,255,0.45)",
+              }}
+            >
               {weddingStatic.backToInvitation}
             </Button>
-            <Box sx={{ color: "#C9A075", lineHeight: 1 }}>
-              <ChurchOutlinedIcon sx={{ fontSize: "3rem" }} />
+            <Box sx={{ color: "#4C3117", lineHeight: 1 }}>
+              <ChurchOutlinedIcon sx={{ fontSize: "3rem", filter: "drop-shadow(0 1px 2px rgba(255,255,255,0.45))" }} />
             </Box>
-            <Typography sx={{ fontSize: isMobile ? "2rem" : "2.6rem", color: "#5D4E3C", fontStyle: "italic" }}>{weddingStatic.couple}</Typography>
-            <Typography sx={{ color: "#8B7355", letterSpacing: 1.8, fontSize: "0.9rem" }}>{weddingStatic.date}</Typography>
-            <Typography sx={{ color: "#C9A075", textTransform: "uppercase", letterSpacing: 2, fontSize: "0.75rem" }}>Click to open</Typography>
+            <Typography
+              sx={{
+                fontSize: isMobile ? "2rem" : "2.6rem",
+                color: "#2A1A0F",
+                fontStyle: "italic",
+                fontWeight: 700,
+                textShadow: "0 1px 2px rgba(255,255,255,0.45)",
+              }}
+            >
+              {weddingStatic.couple}
+            </Typography>
+            <Typography
+              sx={{
+                color: "#2F2116",
+                letterSpacing: 1.8,
+                fontSize: "0.9rem",
+                fontWeight: 700,
+                textShadow: "0 1px 2px rgba(255,255,255,0.45)",
+              }}
+            >
+              {weddingStatic.date}
+            </Typography>
+            <Typography
+              sx={{
+                color: "#352315",
+                textTransform: "uppercase",
+                letterSpacing: 2,
+                fontSize: "0.75rem",
+                fontWeight: 800,
+                textShadow: "0 1px 2px rgba(255,255,255,0.4)",
+              }}
+            >
+              Click to open
+            </Typography>
           </MotionBox>
         </Box>
       )}
