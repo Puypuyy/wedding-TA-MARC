@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { Alert, Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Stack, TextField, Typography } from "@mui/material";
+import { Alert, Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Stack, TextField, Typography } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
 import { fetchRsvp, submitRsvp } from "./rsvpApi";
 
 const emptyState = {
@@ -159,8 +160,31 @@ const RsvpDialog = ({ open, onClose, onViewDetails }) => {
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-      <DialogTitle sx={{ color: "#7A5630", fontFamily: '"Cormorant Garamond", Georgia, serif', fontSize: "2rem" }}>
+      <DialogTitle
+        sx={{
+          color: "#7A5630",
+          fontFamily: '"Cormorant Garamond", Georgia, serif',
+          fontSize: "2rem",
+          pr: 6,
+          position: "relative",
+        }}
+      >
         RSVP Confirmation
+        <IconButton
+          onClick={onClose}
+          aria-label="Close RSVP dialog"
+          sx={{
+            position: "absolute",
+            right: 12,
+            top: 10,
+            color: "#7A5630",
+            border: "1px solid rgba(122,86,48,0.35)",
+            backgroundColor: "rgba(255,255,255,0.9)",
+            "&:hover": { backgroundColor: "rgba(122,86,48,0.1)" },
+          }}
+        >
+          <CloseIcon />
+        </IconButton>
       </DialogTitle>
       <DialogContent>
         <Stack spacing={2} sx={{ pt: 1 }}>
@@ -214,7 +238,7 @@ const RsvpDialog = ({ open, onClose, onViewDetails }) => {
               />
 
               <TextField
-                label="Message (optional)"
+                label="Attendees and Message(optional)"
                 value={state.note}
                 onChange={(e) => setField("note", e.target.value)}
                 multiline
@@ -225,17 +249,31 @@ const RsvpDialog = ({ open, onClose, onViewDetails }) => {
           ) : null}
         </Stack>
       </DialogContent>
-      <DialogActions sx={{ px: 3, pb: 2.2, display: "flex", justifyContent: "space-between" }}>
-        <Button onClick={onClose} sx={{ color: "#7A5630" }}>
-          Close
-        </Button>
-        <Box sx={{ display: "flex", gap: 1 }}>
+      <DialogActions
+        sx={{
+          px: 3,
+          pb: 2.2,
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: { xs: "stretch", sm: "center" },
+          flexDirection: { xs: "column", sm: "row" },
+          gap: { xs: 1, sm: 2 },
+        }}
+      >
+        <Box sx={{ display: "flex", gap: 1, flexDirection: { xs: "column", sm: "row" }, width: { xs: "100%", sm: "auto" } }}>
           <Button
             onClick={onViewDetails}
-            variant="text"
-            sx={{ color: "#7A5630" }}
+            variant="contained"
+            sx={{
+              backgroundColor: "#7A5630",
+              color: "#FDF8F2",
+              fontWeight: 600,
+              px: 2.2,
+              width: { xs: "100%", sm: "auto" },
+              "&:hover": { backgroundColor: "#5D4E3C" },
+            }}
           >
-            View Details
+            Open Invitation & Wedding Details
           </Button>
           {isChecked && !isAlreadyConfirmed ? (
             <>
@@ -243,7 +281,12 @@ const RsvpDialog = ({ open, onClose, onViewDetails }) => {
                 onClick={handleNotAttending}
                 variant="outlined"
                 disabled={state.submitting}
-                sx={{ borderColor: "#9C6B2F", color: "#7A5630", "&:hover": { borderColor: "#7A5630" } }}
+                sx={{
+                  borderColor: "#9C6B2F",
+                  color: "#7A5630",
+                  width: { xs: "100%", sm: "auto" },
+                  "&:hover": { borderColor: "#7A5630" },
+                }}
               >
                 {state.submitting ? "Submitting..." : "Not Attending"}
               </Button>
@@ -251,7 +294,11 @@ const RsvpDialog = ({ open, onClose, onViewDetails }) => {
                 onClick={handleSubmit}
                 variant="contained"
                 disabled={!state.validated || state.submitting}
-                sx={{ backgroundColor: "#9C6B2F", "&:hover": { backgroundColor: "#7A5630" } }}
+                sx={{
+                  backgroundColor: "#9C6B2F",
+                  width: { xs: "100%", sm: "auto" },
+                  "&:hover": { backgroundColor: "#7A5630" },
+                }}
               >
                 {state.submitting ? "Submitting..." : "Confirm RSVP"}
               </Button>
