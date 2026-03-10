@@ -249,8 +249,25 @@ const RsvpDialog = ({ open, onClose, onViewDetails }) => {
           ) : null}
         </Stack>
       </DialogContent>
-      <DialogActions sx={{ px: 3, pb: 2.2, display: "flex", justifyContent: "space-between" }}>
-        <Box sx={{ display: "flex", gap: 1 }}>
+      <DialogActions
+        sx={{
+          px: 3,
+          pb: 2.2,
+          display: "flex",
+          justifyContent: "flex-end",
+          alignItems: { xs: "stretch", sm: "center" },
+          flexDirection: { xs: "column", sm: "row" },
+          gap: { xs: 1, sm: 2 },
+        }}
+      >
+        <Box
+          sx={{
+            display: "flex",
+            gap: 1,
+            flexDirection: { xs: "column", sm: "row" },
+            width: { xs: "100%", sm: "auto" },
+          }}
+        >
           <Button
             onClick={onViewDetails}
             variant="contained"
@@ -259,6 +276,7 @@ const RsvpDialog = ({ open, onClose, onViewDetails }) => {
               color: "#FDF8F2",
               fontWeight: 600,
               px: 2.2,
+              width: { xs: "100%", sm: "auto" },
               "&:hover": { backgroundColor: "#5D4E3C" },
             }}
           >
@@ -270,7 +288,12 @@ const RsvpDialog = ({ open, onClose, onViewDetails }) => {
                 onClick={handleNotAttending}
                 variant="outlined"
                 disabled={state.submitting}
-                sx={{ borderColor: "#9C6B2F", color: "#7A5630", "&:hover": { borderColor: "#7A5630" } }}
+                sx={{
+                  borderColor: "#9C6B2F",
+                  color: "#7A5630",
+                  width: { xs: "100%", sm: "auto" },
+                  "&:hover": { borderColor: "#7A5630" },
+                }}
               >
                 {state.submitting ? "Submitting..." : "Not Attending"}
               </Button>
@@ -278,7 +301,11 @@ const RsvpDialog = ({ open, onClose, onViewDetails }) => {
                 onClick={handleSubmit}
                 variant="contained"
                 disabled={!state.validated || state.submitting}
-                sx={{ backgroundColor: "#9C6B2F", "&:hover": { backgroundColor: "#7A5630" } }}
+                sx={{
+                  backgroundColor: "#9C6B2F",
+                  width: { xs: "100%", sm: "auto" },
+                  "&:hover": { backgroundColor: "#7A5630" },
+                }}
               >
                 {state.submitting ? "Submitting..." : "Confirm RSVP"}
               </Button>
