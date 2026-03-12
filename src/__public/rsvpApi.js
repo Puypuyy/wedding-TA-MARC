@@ -21,6 +21,33 @@ const readJson = async (response) => {
   }
 };
 
+const hasRsvpPayload = (data) => {
+  if (!data || typeof data !== "object") return false;
+  return Boolean(
+    data.rsvp_code ||
+      data.rsvpCode ||
+      data.guest_name ||
+      data.guestName ||
+      data.name ||
+      data.max_seats_allowed ||
+      data.reserved_seats ||
+      data.reservedSeats ||
+      data.seats_reserved ||
+      data.seat_count ||
+      data.seats ||
+      data.seats_confirmed ||
+      data.confirmed_seats ||
+      data.confirmedSeats ||
+      data.attendance_status ||
+      data.attendanceStatus ||
+      data.status ||
+      data.is_confirmed ||
+      data.isConfirmed ||
+      data.confirmed ||
+      data.already_confirmed,
+  );
+};
+
 const normalizeRsvp = (data) => {
   const reservedSeats = toNumber(
     data?.max_seats_allowed ??
@@ -71,6 +98,7 @@ const postRsvp = async (payload) => {
     method: "POST",
     body: JSON.stringify(payload),
   });
+  console.log(response)
 
   const data = await readJson(response);
 
@@ -87,10 +115,15 @@ export const fetchRsvp = async (code) => {
   const trimmedCode = String(code || "").trim();
   const response = await fetch(`${RSVP_API_URL}?rsvp_code=${encodeURIComponent(trimmedCode)}`);
   const data = await readJson(response);
+  console.log(data)
 
   if (!response.ok || data?.ok === false) {
     const message = data?.error || `Request failed with status ${response.status}`;
     throw new Error(message);
+  }
+
+  if (!hasRsvpPayload(data)) {
+    throw new Error("RSVP code not found. Please check and try again.");
   }
 
   return normalizeRsvp(data);

@@ -17,6 +17,7 @@ const emptyState = {
 const RsvpDialog = ({ open, onClose, onViewDetails }) => {
   const [state, setState] = useState(emptyState);
   const isChecked = Boolean(state.validated);
+  const hasValidCode = Boolean(state.validated && state.code.trim());
   const isAlreadyConfirmed = Boolean(
     state.validated?.isConfirmed ||
       String(state.validated?.attendanceStatus || "").toLowerCase() === "confirmed" ||
@@ -271,6 +272,7 @@ const RsvpDialog = ({ open, onClose, onViewDetails }) => {
           <Button
             onClick={onViewDetails}
             variant="contained"
+            disabled={!hasValidCode}
             sx={{
               backgroundColor: "#7A5630",
               color: "#FDF8F2",
@@ -287,7 +289,7 @@ const RsvpDialog = ({ open, onClose, onViewDetails }) => {
               <Button
                 onClick={handleNotAttending}
                 variant="outlined"
-                disabled={state.submitting}
+                disabled={!hasValidCode || state.submitting}
                 sx={{
                   borderColor: "#9C6B2F",
                   color: "#7A5630",
@@ -300,7 +302,7 @@ const RsvpDialog = ({ open, onClose, onViewDetails }) => {
               <Button
                 onClick={handleSubmit}
                 variant="contained"
-                disabled={!state.validated || state.submitting}
+                disabled={!hasValidCode || state.submitting}
                 sx={{
                   backgroundColor: "#9C6B2F",
                   width: { xs: "100%", sm: "auto" },
